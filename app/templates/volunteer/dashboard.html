@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Volunteer Dashboard - FoodLink Connect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-speedometer2"></i> Volunteer Dashboard</h2>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Pickups</h5>
+                <h2 class="mb-0">{{ stats.num_pickups or 0 }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Total Rescued (kg)</h5>
+                <h2 class="mb-0">{{ "%.1f"|format(stats.total_rescued or 0) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Active Days</h5>
+                <h2 class="mb-0">{{ stats.active_days or 0 }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-plus-circle"></i> Quick Actions</h5>
+                <a href="{{ url_for('volunteer.log_pickup') }}" class="btn btn-primary me-2 mb-2">Log Food Pickup</a>
+                <a href="{{ url_for('volunteer.client_signin') }}" class="btn btn-success mb-2">Sign In Client</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Pickups -->
+{% if today_donations %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-calendar-day"></i> Today's Pickups</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Weight (kg)</th>
+                        <th>Food Type</th>
+                        <th>Source</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for donation in today_donations %}
+                    <tr>
+                        <td>{{ donation.donation_date.strftime('%H:%M') if donation.donation_date else 'N/A' }}</td>
+                        <td>{{ "%.2f"|format(donation.weight_kg) }}</td>
+                        <td>{{ donation.food_type or 'N/A' }}</td>
+                        <td>{{ donation.source or 'N/A' }}</td>
+                        <td><span class="badge bg-secondary">{{ donation.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Donations -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Donations</h5>
+    </div>
+    <div class="card-body">
+        {% if recent_donations %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Weight (kg)</th>
+                            <th>Food Type</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donation in recent_donations %}
+                        <tr>
+                            <td>{{ donation.donation_date.strftime('%Y-%m-%d %H:%M') if donation.donation_date else 'N/A' }}</td>
+                            <td>{{ "%.2f"|format(donation.weight_kg) }}</td>
+                            <td>{{ donation.food_type or 'N/A' }}</td>
+                            <td>{{ donation.source or 'N/A' }}</td>
+                            <td><span class="badge bg-secondary">{{ donation.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ url_for('volunteer.my_pickups') }}" class="btn btn-outline-primary">View All Pickups</a>
+        {% else %}
+            <p class="text-muted">No donations yet. <a href="{{ url_for('volunteer.log_pickup') }}">Log your first pickup!</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

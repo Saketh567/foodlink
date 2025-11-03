@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - FoodLink Connect{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-graph-up"></i> Reports</h2>
+
+<!-- Date Range Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('admin.reports') }}">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="end_date" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Donation Summary -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-box-seam"></i> Donation Summary</h5>
+    </div>
+    <div class="card-body">
+        {% if donation_summary %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Number of Donations</th>
+                            <th>Total Weight (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in donation_summary %}
+                        <tr>
+                            <td>{{ item.date.strftime('%Y-%m-%d') if item.date else 'N/A' }}</td>
+                            <td>{{ item.num_donations }}</td>
+                            <td>{{ "%.2f"|format(item.total_weight) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">No donations found for this period.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Volunteer Activity -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-people"></i> Volunteer Activity</h5>
+    </div>
+    <div class="card-body">
+        {% if volunteer_activity %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Volunteer Name</th>
+                            <th>Number of Pickups</th>
+                            <th>Total Rescued (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for volunteer in volunteer_activity %}
+                        <tr>
+                            <td>{{ volunteer.full_name }}</td>
+                            <td>{{ volunteer.num_pickups }}</td>
+                            <td>{{ "%.2f"|format(volunteer.total_rescued) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">No volunteer activity found for this period.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

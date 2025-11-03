@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - FoodLink Connect{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+            <h1 class="display-4"><i class="bi bi-heart-fill"></i> FoodLink Connect</h1>
+            <p class="lead">Connecting food donations with families in need, building stronger communities together.</p>
+            <hr class="my-4 bg-white">
+            <p>Join us in the fight against hunger. Every donation counts, every meal matters.</p>
+            {% if not session.user_id %}
+                <a class="btn btn-light btn-lg me-2" href="{{ url_for('auth.register') }}" role="button">Get Started</a>
+                <a class="btn btn-outline-light btn-lg" href="{{ url_for('auth.login') }}" role="button">Login</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">For Families</h5>
+                <p class="card-text">Register to receive food assistance and support your family's needs.</p>
+                {% if not session.user_id %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Register Now</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <i class="bi bi-hand-heart-fill text-success" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">For Volunteers</h5>
+                <p class="card-text">Help collect and distribute food to families in your community.</p>
+                {% if not session.user_id %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-success">Join as Volunteer</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <i class="bi bi-gift-fill text-warning" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Make a Difference</h5>
+                <p class="card-text">Together, we can reduce food waste and feed those in need.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
