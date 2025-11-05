@@ -1,0 +1,293 @@
+/* General layout */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  background: #fff;
+  border-bottom: 2px solid #eee;
+  padding: 15px;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+/* Page container */
+.container {
+  max-width: 840px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+/* Card-like section */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.h1 {
+  font-size: 28px;
+  margin-bottom: 24px;
+}
+
+/* Form */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* Text inputs */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #000;
+  border-radius: 12px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* Buttons */
+button, .file-btn {
+  background-color: #2563eb;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover, .file-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* File upload */
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.file-hint {
+  margin-left: 10px;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* Gallery */
+.gallery {
+  margin-top: 24px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+.photo-card {
+  margin: 0;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.photo-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-card figcaption {
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  color: #444;
+  background: #fafafa;
+  border-top: 1px solid #e5e7eb;
+}
+
+.muted {
+  color: #6b7280;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Centers the page content area */
+.container{
+  max-width: 880px;
+  margin: 32px auto;          /* horizontal center */
+  padding: 0 16px;
+}
+
+/* Also center/narrow cards within the container */
+.card{
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+  padding:22px;
+  max-width: 560px;           /* narrow the column */
+  margin: 0 auto;             /* center the card itself */
+}
+
+/* Global layout */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f8f8f8;
+  color: #111;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---- ONE container, ONE card ---- */
+.container{
+  display:flex;
+  justify-content:center;   /* centers horizontally */
+  align-items:flex-start;
+  min-height:100vh;
+  padding:40px 16px;
+  margin:0 auto;
+}
+
+.card{
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  padding:40px;
+  width:90%;
+  max-width:500px;          /* set the column width */
+  margin:0 auto;            /* ensure the card itself is centered */
+}
+
+
+/* Form alignment */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Two-column layout for paired fields */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;  /* two equal columns */
+  gap: 16px;                       /* space between columns */
+}
+
+/* Make it stack vertically on smaller screens */
+@media (max-width: 600px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Headings */
+h1, h2 {
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 20px;
+}
+
+/* Form styling */
+.profile-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.profile-form input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #000;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* Centered, styled button */
+.profile-form button,
+.file-btn {
+  background-color: #0078ff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 0;
+  width: 100%;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.profile-form button:hover,
+.file-btn:hover {
+  background-color: #005fcb;
+}
+
+/* Navbar styling (only one navbar globally) */
+.navbar {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 14px 0;
+}
+
+.navbar a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+
+
+/* Flat layout for the profile page (no popout, still centered) */
+.profile-page {
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 640px;   /* control form width */
+  margin: 0 auto;     /* keep centered within .container */
+}
+
+
+
+
+
+
+
