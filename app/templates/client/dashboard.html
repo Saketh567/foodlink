@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard - FoodLink Connect{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-speedometer2"></i> My Dashboard</h2>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person-circle"></i> Client Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Client Number:</strong> 
+                            {% if client.client_number %}
+                                <span class="badge bg-success">{{ client.client_number }}</span>
+                            {% else %}
+                                <span class="badge bg-warning">Pending</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Name:</strong> {{ client.full_name }}</p>
+                        <p><strong>Email:</strong> {{ client.email }}</p>
+                        <p><strong>Phone:</strong> {{ client.phone }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Address:</strong> {{ client.address }}</p>
+                        <p><strong>Family Size:</strong> {{ client.family_size }}</p>
+                        {% if client.allergies %}
+                            <p><strong>Allergies:</strong> {{ client.allergies }}</p>
+                        {% endif %}
+                        {% if client.food_preferences %}
+                            <p><strong>Food Preferences:</strong> {{ client.food_preferences }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <hr>
+                <p><strong>Verification Status:</strong> 
+                    {% if client.verification_status == 'verified' %}
+                        <span class="badge bg-success">Verified</span>
+                    {% elif client.verification_status == 'pending' %}
+                        <span class="badge bg-warning">Pending Verification</span>
+                    {% else %}
+                        <span class="badge bg-danger">Rejected</span>
+                    {% endif %}
+                </p>
+                {% if client.client_number and client.verification_status == 'verified' %}
+                    <hr>
+                    <div class="text-center">
+                        <h6><i class="bi bi-qr-code-scan"></i> Your QR Code</h6>
+                        <p class="text-muted small">Show this QR code to volunteers for quick sign-in</p>
+                        <img src="{{ url_for('client.qr_code') }}" alt="QR Code" class="img-fluid" style="max-width: 200px; border: 2px solid #dee2e6; padding: 10px; border-radius: 8px;">
+                        <p class="mt-2 small"><strong>Client Number:</strong> {{ client.client_number }}</p>
+                        <a href="{{ url_for('client.qr_code') }}" download="qrcode.png" class="btn btn-sm btn-outline-primary mt-2">
+                            <i class="bi bi-download"></i> Download QR Code
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Distributions -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-box-arrow-in-down"></i> Recent Distributions</h5>
+    </div>
+    <div class="card-body">
+        {% if distributions %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Weight (kg)</th>
+                            <th>Items</th>
+                            <th>Volunteer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dist in distributions[:10] %}
+                        <tr>
+                            <td>{{ dist.distribution_date.strftime('%Y-%m-%d %H:%M') if dist.distribution_date else 'N/A' }}</td>
+                            <td>{{ "%.2f"|format(dist.weight_kg) }}</td>
+                            <td>{{ dist.items_description or 'N/A' }}</td>
+                            <td>{{ dist.volunteer_name or 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ url_for('client.history') }}" class="btn btn-outline-primary">View Full History</a>
+        {% else %}
+            <p class="text-muted">No distributions yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

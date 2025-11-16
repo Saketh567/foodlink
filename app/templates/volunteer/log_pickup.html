@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Log Pickup - FoodLink Connect{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-plus-circle"></i> Log Food Pickup</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">New Donation Record</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('volunteer.log_pickup') }}">
+                    <div class="mb-3">
+                        <label for="donation_date" class="form-label">Date & Time</label>
+                        <input type="datetime-local" class="form-control" id="donation_date" name="donation_date">
+                        <small class="form-text text-muted">Leave empty to use current time</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="weight_kg" class="form-label">Weight (kg) *</label>
+                        <input type="number" class="form-control" id="weight_kg" name="weight_kg" 
+                               step="0.01" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="food_type" class="form-label">Food Type</label>
+                        <input type="text" class="form-control" id="food_type" name="food_type" 
+                               placeholder="e.g., Fresh Produce, Bakery, Canned Goods">
+                    </div>
+                    <div class="mb-3">
+                        <label for="source" class="form-label">Source</label>
+                        <input type="text" class="form-control" id="source" name="source" 
+                               placeholder="e.g., Local Grocery Store, Restaurant Name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" 
+                                  placeholder="Additional details about the donation..."></textarea>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex">
+                        <button type="submit" class="btn btn-primary">Log Donation</button>
+                        <a href="{{ url_for('volunteer.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

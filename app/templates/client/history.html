@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Distribution History - FoodLink Connect{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-clock-history"></i> Distribution History</h2>
+
+<div class="card">
+    <div class="card-body">
+        {% if distributions %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Weight (kg)</th>
+                            <th>Items Description</th>
+                            <th>Volunteer</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dist in distributions %}
+                        <tr>
+                            <td>{{ dist.distribution_date.strftime('%Y-%m-%d %H:%M') if dist.distribution_date else 'N/A' }}</td>
+                            <td>{{ "%.2f"|format(dist.weight_kg) }}</td>
+                            <td>{{ dist.items_description or 'N/A' }}</td>
+                            <td>{{ dist.volunteer_name or 'N/A' }}</td>
+                            <td>{{ dist.notes or 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">No distribution history available.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{{ url_for('client.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+{% endblock %}
+

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Register - FoodLink Connect{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Client Registration</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="full_name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number (10 digits)</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="family_size" class="form-label">Family Size</label>
+                            <input type="number" class="form-control" id="family_size" name="family_size" min="1" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="allergies" class="form-label">Allergies (if any)</label>
+                            <input type="text" class="form-control" id="allergies" name="allergies" placeholder="e.g., Peanuts, Dairy">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="food_preferences" class="form-label">Food Preferences</label>
+                            <input type="text" class="form-control" id="food_preferences" name="food_preferences" placeholder="e.g., Vegetarian, Halal">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <small class="form-text text-muted">Minimum 8 characters, must contain letters and numbers</small>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">Register</button>
+                    </div>
+                </form>
+                <hr>
+                <p class="text-center mb-0">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
