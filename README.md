@@ -16,16 +16,19 @@ FoodLink Connect is a Flask-based web application designed to streamline the pro
 - Donation tracking and monitoring
 
 ### For Volunteers
+- **Dedicated volunteer registration** with availability scheduling
 - Log food pickups from donors
-- Sign in clients for food distribution
+- Sign in clients for food distribution (QR code scanning supported)
 - Track personal volunteer statistics
 - View pickup history
+- Schedule management (Monday-Friday, 11:00 AM - 2:00 PM)
 
 ### For Clients
 - Registration and profile management
 - View distribution history
 - Update personal information
 - Track received food assistance
+- QR code for quick sign-in
 
 ## 🚀 Quick Start
 
@@ -33,6 +36,7 @@ FoodLink Connect is a Flask-based web application designed to streamline the pro
 - Python 3.8 or higher
 - MySQL 5.7+ or MariaDB 10.2+
 - pip (Python package manager)
+- Modern web browser (Chrome, Firefox, Safari, Edge) with JavaScript enabled
 
 ### Quick Installation Steps
 
@@ -85,6 +89,10 @@ FoodLink Connect is a Flask-based web application designed to streamline the pro
 
 7. **Access the application**
    - Open your browser and navigate to: `http://localhost:5000`
+   - The application is fully responsive and works on desktop, tablet, and mobile devices
+   - **Registration Pages:**
+     - Client Registration: `http://localhost:5000/register`
+     - Volunteer Registration: `http://localhost:5000/register/volunteer`
 
 ### 📖 Detailed Setup Guide
 
@@ -110,6 +118,21 @@ For comprehensive step-by-step instructions with troubleshooting, see **[SETUP_G
 - **Download QR Codes:** Clients can download their QR code as PNG image
 - **Camera Integration:** Built-in HTML5 camera scanner for mobile devices
 
+### 📱 Mobile Optimization
+- **Fully Responsive Design:** Optimized for all mobile devices and tablets
+- **Touch-Friendly Interface:** All buttons meet 44px minimum touch target size
+- **Mobile-First CSS:** Comprehensive media queries for optimal mobile experience
+- **Smooth Scrolling:** Optimized table scrolling and card layouts for mobile
+- **iOS Optimizations:** Prevents unwanted zoom, proper viewport configuration
+- **Landscape Support:** Optimized layouts for both portrait and landscape orientations
+
+### 🎨 Modern UI/UX
+- **Green Theme:** Beautiful green color scheme throughout the application
+- **Gradient Effects:** Modern gradient backgrounds for buttons, navbar, and cards
+- **Smooth Animations:** Hover effects and transitions for better user experience
+- **Enhanced Cards:** Improved card designs with shadows and hover effects
+- **Professional Forms:** Better form styling with focus states and validation feedback
+
 ### 🎯 Role-Based Features
 
 **Admin:**
@@ -120,6 +143,9 @@ For comprehensive step-by-step instructions with troubleshooting, see **[SETUP_G
 - Donation tracking
 
 **Volunteer:**
+- **Separate Registration Page:** Dedicated volunteer registration with availability scheduling
+- **Availability Selection:** Choose available days (Monday-Friday, 11:00 AM - 2:00 PM)
+- **Automatic Schedule Creation:** System creates 8 weeks of schedules based on availability
 - Log food pickups
 - Scan QR codes or manually enter client numbers
 - Sign in clients for distribution
@@ -141,10 +167,32 @@ FoodLink/
 │   ├── config.py            # Configuration settings
 │   ├── database.py          # MySQL connection handler
 │   ├── models/              # Data access layer
+│   │   ├── user_model.py
+│   │   ├── client_model.py
+│   │   ├── volunteer_model.py
+│   │   └── donation_model.py
 │   ├── routes/              # Route blueprints
+│   │   ├── auth_routes.py   # Login, registration (client & volunteer)
+│   │   ├── admin_routes.py
+│   │   ├── volunteer_routes.py
+│   │   └── client_routes.py
 │   ├── utils/              # Helper functions
-│   ├── static/              # Static files (CSS, JS, images)
+│   │   ├── security.py
+│   │   ├── decorators.py
+│   │   └── helpers.py
+│   ├── static/              # Static files
+│   │   ├── css/
+│   │   │   ├── style.css    # Main stylesheet (green theme, mobile-responsive)
+│   │   │   └── dashboard.css
+│   │   └── js/
 │   └── templates/          # HTML templates
+│       ├── auth/
+│       │   ├── login.html
+│       │   ├── register.html        # Client registration
+│       │   └── register_volunteer.html  # Volunteer registration
+│       ├── admin/
+│       ├── volunteer/
+│       └── client/
 ├── migrations/
 │   └── schema.sql          # Database schema
 ├── tests/                  # Unit tests
@@ -198,6 +246,9 @@ See `migrations/schema.sql` for complete schema definition.
 - SQL injection prevention via parameterized queries
 - Session management with secure cookies
 - Input validation on all forms
+- File upload validation and secure filename handling
+- Email uniqueness enforcement
+- Phone number format validation
 
 ## 🧪 Testing
 
@@ -264,6 +315,9 @@ For issues and questions:
 
 ## 🎯 Roadmap
 
+- [x] Mobile-responsive design
+- [x] Green theme implementation
+- [x] Volunteer registration with scheduling
 - [ ] Email notifications
 - [ ] Mobile app API
 - [ ] Real-time updates (WebSocket)
@@ -272,6 +326,7 @@ For issues and questions:
 - [ ] Advanced analytics dashboard
 - [ ] Multi-location support
 - [ ] SMS notifications
+- [ ] Volunteer availability management dashboard
 
 ---
 
