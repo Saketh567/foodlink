@@ -1,0 +1,121 @@
+/* Reset default margins and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Styling the Body element */
+body{
+  background-color: #B7E2A9;
+  font-family: Verdana;
+}
+/*Styling the Header body*/
+.site-header{
+  display: flex;
+  align-items: center;
+  justify-content: center; /* space logo and nav apart */
+  position: relative;
+  background-color: #ffffffdd;
+  color: rgb(0, 0, 0);
+  padding: 20px;
+}
+/*Styling the header title*/
+.title-header{
+  text-align: center;
+  position: absolute;
+  letter-spacing: 10px;
+  font-size: large;
+}
+
+/*Styling the Foodlinks logo*/
+.logo img{
+  height: 80px;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 20px;
+  margin-left: auto; /* pushes nav to the right */
+}
+
+.nav-menu a {
+  color: rgb(0, 7, 1);
+  text-decoration:none;
+  font-weight: 500;
+}
+
+.nav-menu a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+  background-color: blue;
+  color: #fff;
+}
+
+/* Styling the Form */
+form {
+  background-color: #fff;
+  max-width: 550px;
+  margin: 50px auto;
+  padding: 30px 30px;
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.form-header h1{
+  background-color: #B7E2A9;
+  padding:50px;
+  text-align: center;
+}
+/* Styling .form-group */
+.form-group {
+  text-align: left;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+/* Styling .form-group label */
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+}
+/* Styling .form-group input, select, textarea */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border: 1px solid #777;
+  border-radius: 2px;
+  font-family: inherit;
+  padding: 10px;
+  display: block;
+  width: 95%;
+}
+/* Styling Checkboxs */
+.form-group input[type="checkbox"] {
+  display: inline-block;
+  width: auto;
+}
+/* Styling Button */
+button {
+  background-color: #B7E2A9;
+  border: 1px solid #777;
+  border-radius: 2px;
+  font-family: inherit;
+  font-size: 21px;
+  display: block;
+  width: 100%;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+/*Styling the button when hovered*/
+button:hover{
+  background-color: #ffffff;
+  box-shadow:0 8px 16px 0 rgba(0,0,0,0.6)
+}
+
+/*Styling for the dashboard*/
+.dash-header h1{
+  background-color: #B7E2A9;
+  padding:30px;
+  
+}
