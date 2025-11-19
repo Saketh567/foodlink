@@ -1,7 +1,14 @@
 services:
   - type: web
-    name: foodlink
+    name: foodlink-connect
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn run:app
-    pythonVersion: 3.11
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn run:app"
+    runtime: python3.11
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.6
+      - key: PIP_NO_BUILD_ISOLATION
+        value: false
+    autoDeploy: true
