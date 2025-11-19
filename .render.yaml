@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: foodlink
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    pythonVersion: 3.11
