@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Scheduling</title>
+</head>
+<body>
+    <header class="site-header">
+        <div class="title-header">
+            <h1><b>FoodLink Connect</b></h1> 
+        </div>
+        <div class="logo">
+            <img src="Screenshot 2025-10-22 193002 copy.png" alt="Site Logo" class="logo">
+        </div>
+        
+        <nav class="nav-menu">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+    
+    <!--Creating a form-->
+    <form id="forms">
+        <div class="form-header">
+            <h1><b>Volunteer Time Sheet</b></h1>
+        </div>
+        
+        <!--Details about the form-->
+        <div class="form-group">
+            <!--Name Field-->
+            <label for="fname" id="label-name">First Name</label>
+            <input type="text" id="fname" placeholder="Enter first name">
+        </div>
+        <div class="form-group">
+             <label for="lname" id="label-name">Last Name</label>
+            <input type="text" id="lname" placeholder="Enter last name">
+        </div>
+
+        <!--Email Field-->
+        <div class="form-group">
+            <label for="email" id="label-email">Email</label>
+            <input type="text" id="email" placeholder="Enter a vaild email">
+        </div>
+
+        <!--Distrubution time-->
+        <div class="form-group">
+            <label>Date & Time
+                <small>(Check all days available to you):</small>
+            </label>
+            <label for="inp-1">
+                <input type="checkbox" name="inp-1" value="on"> Monday(11:00-2:00)
+            </label>
+            <label for="inp-2">
+                <input type="checkbox" name="inp-2" value="on"> Tuesday(11:00-2:00)
+            </label>
+            <label for="inp-3">
+                <input type="checkbox" name="inp-3" value="on"> Wednesday(11:00-2:00)
+            </label>
+            <label for="inp-4">
+                <input type="checkbox" name="inp-4" value="on"> Thursday(11:00-2:00)
+            </label>
+            <label for="inp-5">
+                <input type="checkbox" name="inp-5" value="on"> Friday(11:00-2:00)
+            </label>
+        </div>
+
+        <!--Submit Button-->
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
