@@ -10,7 +10,7 @@
                 <h4 class="mb-0"><i class="bi bi-person-plus"></i> Client Registration</h4>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ url_for('auth.register') }}">
+                <form method="POST" action="{{ url_for('auth.register') }}" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="full_name" class="form-label">Full Name</label>
@@ -50,15 +50,60 @@
                         <input type="password" class="form-control" id="password" name="password" required>
                         <small class="form-text text-muted">Minimum 8 characters, must contain letters and numbers</small>
                     </div>
+                    <div class="mb-3">
+                        <label for="photo" class="form-label">Profile Photo</label>
+                        <input type="file" class="form-control" id="photo" name="photo" accept="image/jpeg,image/jpg,image/png">
+                        <small class="form-text text-muted">Upload your photo (JPG or PNG, max 16MB). This will be used to verify your identity when picking up food.</small>
+                        <div id="photo-preview" class="mt-2" style="display: none;">
+                            <img id="photo-preview-img" src="" alt="Photo preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid #dee2e6;">
+                        </div>
+                    </div>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-success">Register</button>
                     </div>
                 </form>
                 <hr>
-                <p class="text-center mb-0">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+                <div class="text-center">
+                    <p class="mb-2">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+                    <p class="mb-0 text-muted small">Want to volunteer instead? <a href="{{ url_for('auth.register_volunteer') }}">Register as Volunteer</a></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Photo preview functionality
+    document.getElementById('photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Check file size (16MB max)
+            if (file.size > 16 * 1024 * 1024) {
+                alert('File size must be less than 16MB');
+                e.target.value = '';
+                return;
+            }
+            
+            // Check file type
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file');
+                e.target.value = '';
+                return;
+            }
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('photo-preview-img').src = e.target.result;
+                document.getElementById('photo-preview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            document.getElementById('photo-preview').style.display = 'none';
+        }
+    });
+</script>
 {% endblock %}
 

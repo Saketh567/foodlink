@@ -132,7 +132,7 @@ def verify_qr():
     
     # Get client information
     client = query_db(
-        '''SELECT c.client_id, c.client_number, u.full_name, u.email
+        '''SELECT c.client_id, c.client_number, c.photo_path, u.full_name, u.email
            FROM clients c
            JOIN users u ON c.user_id = u.user_id
            WHERE c.client_number = %s AND c.verification_status = "verified"''',
@@ -148,7 +148,8 @@ def verify_qr():
         'client': {
             'client_number': client['client_number'],
             'full_name': client['full_name'],
-            'email': client['email']
+            'email': client['email'],
+            'photo_path': client.get('photo_path') or None
         }
     }), 200
 

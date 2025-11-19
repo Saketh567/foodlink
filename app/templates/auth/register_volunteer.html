@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Volunteer Registration - FoodLink Connect{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-hand-heart-fill"></i> Volunteer Registration</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('auth.register_volunteer') }}" id="volunteer-form">
+                    <!-- Personal Information -->
+                    <h5 class="mb-3 text-primary"><i class="bi bi-person-circle"></i> Personal Information</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <small class="form-text text-muted">We'll use this to contact you about volunteer opportunities</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" placeholder="10 digits" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="address" name="address" rows="2" required placeholder="Your full address"></textarea>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Account Credentials -->
+                    <h5 class="mb-3 text-primary"><i class="bi bi-shield-lock"></i> Account Credentials</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                            <small class="form-text text-muted">Minimum 8 characters, must contain letters and numbers</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="confirm_password" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            <small class="form-text text-muted" id="password-match"></small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Availability Schedule -->
+                    <h5 class="mb-3 text-primary"><i class="bi bi-calendar-check"></i> Volunteer Availability</h5>
+                    <p class="text-muted mb-3">Please select all days and times you are available to volunteer:</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="form-check availability-checkbox">
+                                    <input class="form-check-input" type="checkbox" name="availability" id="monday" value="monday">
+                                    <label class="form-check-label" for="monday">
+                                        <strong>Monday</strong> (11:00 AM - 2:00 PM)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check availability-checkbox">
+                                    <input class="form-check-input" type="checkbox" name="availability" id="tuesday" value="tuesday">
+                                    <label class="form-check-label" for="tuesday">
+                                        <strong>Tuesday</strong> (11:00 AM - 2:00 PM)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check availability-checkbox">
+                                    <input class="form-check-input" type="checkbox" name="availability" id="wednesday" value="wednesday">
+                                    <label class="form-check-label" for="wednesday">
+                                        <strong>Wednesday</strong> (11:00 AM - 2:00 PM)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="form-check availability-checkbox">
+                                    <input class="form-check-input" type="checkbox" name="availability" id="thursday" value="thursday">
+                                    <label class="form-check-label" for="thursday">
+                                        <strong>Thursday</strong> (11:00 AM - 2:00 PM)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check availability-checkbox">
+                                    <input class="form-check-input" type="checkbox" name="availability" id="friday" value="friday">
+                                    <label class="form-check-label" for="friday">
+                                        <strong>Friday</strong> (11:00 AM - 2:00 PM)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="bi bi-info-circle"></i> <strong>Note:</strong> You can update your availability after registration from your dashboard.
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-person-plus"></i> Register as Volunteer
+                        </button>
+                        <div class="text-center">
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-sm">
+                                Already have an account? Login here
+                            </a>
+                            <p class="mt-2 mb-0 text-muted small">Need food assistance? <a href="{{ url_for('auth.register') }}">Register as Client</a></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .availability-checkbox {
+        padding: 0.75rem;
+        border: 2px solid #e9ecef;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        margin-bottom: 0.5rem;
+    }
+    
+    .availability-checkbox:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(25, 135, 84, 0.05);
+    }
+    
+    .availability-checkbox input:checked ~ label {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+    
+    .availability-checkbox input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .form-check-label {
+        cursor: pointer;
+        width: 100%;
+        padding-left: 0.5rem;
+    }
+    
+    .form-check-input {
+        cursor: pointer;
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Password confirmation validation
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    const passwordMatch = document.getElementById('password-match');
+    
+    function validatePasswordMatch() {
+        if (confirmPassword.value === '') {
+            passwordMatch.textContent = '';
+            confirmPassword.classList.remove('is-invalid', 'is-valid');
+            return;
+        }
+        
+        if (password.value === confirmPassword.value) {
+            passwordMatch.textContent = '✓ Passwords match';
+            passwordMatch.classList.remove('text-danger');
+            passwordMatch.classList.add('text-success');
+            confirmPassword.classList.remove('is-invalid');
+            confirmPassword.classList.add('is-valid');
+        } else {
+            passwordMatch.textContent = '✗ Passwords do not match';
+            passwordMatch.classList.remove('text-success');
+            passwordMatch.classList.add('text-danger');
+            confirmPassword.classList.remove('is-valid');
+            confirmPassword.classList.add('is-invalid');
+        }
+    }
+    
+    password.addEventListener('input', validatePasswordMatch);
+    confirmPassword.addEventListener('input', validatePasswordMatch);
+    
+    // Form submission validation
+    document.getElementById('volunteer-form').addEventListener('submit', function(e) {
+        // Check if at least one availability is selected
+        const availabilityChecked = document.querySelectorAll('input[name="availability"]:checked');
+        if (availabilityChecked.length === 0) {
+            e.preventDefault();
+            alert('Please select at least one day you are available to volunteer.');
+            return false;
+        }
+        
+        // Check password match
+        if (password.value !== confirmPassword.value) {
+            e.preventDefault();
+            alert('Passwords do not match. Please check and try again.');
+            return false;
+        }
+    });
+    
+    // Combine first and last name for full_name
+    const firstName = document.getElementById('first_name');
+    const lastName = document.getElementById('last_name');
+    
+    // Create a hidden field for full_name
+    const hiddenFullName = document.createElement('input');
+    hiddenFullName.type = 'hidden';
+    hiddenFullName.name = 'full_name';
+    document.getElementById('volunteer-form').appendChild(hiddenFullName);
+    
+    function updateFullName() {
+        hiddenFullName.value = (firstName.value + ' ' + lastName.value).trim();
+    }
+    
+    firstName.addEventListener('input', updateFullName);
+    lastName.addEventListener('input', updateFullName);
+</script>
+{% endblock %}
+

@@ -20,6 +20,31 @@
     .scanner-active #qr-scanner-container {
         display: block;
     }
+    
+    /* Mobile optimizations for QR scanner */
+    @media (max-width: 768px) {
+        #qr-video {
+            max-width: 100%;
+        }
+        
+        #client-photo {
+            max-width: 100px !important;
+            max-height: 100px !important;
+        }
+        
+        .input-group {
+            flex-direction: column;
+        }
+        
+        .input-group .btn {
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+        
+        #interactive.viewport {
+            max-width: 100%;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -38,17 +63,36 @@
                         <label for="client_number" class="form-label">Client Number *</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="client_number" name="client_number" 
-                                   placeholder="e.g., FL-001" required>
-                            <button type="button" class="btn btn-outline-primary" id="scan-qr-btn" onclick="toggleScanner()">
-                                <i class="bi bi-qr-code-scan"></i> Scan QR Code
+                                   placeholder="e.g., FL-001" required onblur="verifyClientManual(this.value)">
+                            <button type="button" class="btn btn-outline-primary d-md-inline d-grid" id="scan-qr-btn" onclick="toggleScanner()">
+                                <i class="bi bi-qr-code-scan"></i> Scan QR/Barcode
                             </button>
                         </div>
-                        <small class="form-text text-muted">Enter manually or scan the client's QR code</small>
+                        <small class="form-text text-muted">Enter manually or scan the client's QR code or barcode</small>
                         
-                        <!-- QR Code Scanner -->
+                        <!-- Client Verification Info -->
+                        <div id="client-verification-info" class="mt-3" style="display: none;">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-3 text-center">
+                                            <img id="client-photo" src="" alt="Client Photo" class="img-fluid rounded-circle" style="max-width: 120px; max-height: 120px; border: 3px solid #28a745;">
+                                            <p class="mt-2 mb-0 small text-muted">Client Photo</p>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <h5 class="text-success mb-2"><i class="bi bi-check-circle-fill"></i> Client Verified</h5>
+                                            <p class="mb-1"><strong>Name:</strong> <span id="client-name"></span></p>
+                                            <p class="mb-1"><strong>Client Number:</strong> <span id="client-number-display"></span></p>
+                                            <p class="mb-0"><strong>Email:</strong> <span id="client-email"></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- QR/Barcode Scanner -->
                         <div id="qr-scanner-container" class="mt-3 text-center">
-                            <video id="qr-video" autoplay playsinline></video>
-                            <canvas id="qr-canvas"></canvas>
+                            <div id="scanner-viewport"></div>
                             <div class="mt-2">
                                 <button type="button" class="btn btn-sm btn-secondary" onclick="stopScanner()">Stop Scanner</button>
                             </div>
@@ -82,15 +126,16 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- jsQR library for QR code scanning -->
+<!-- QuaggaJS for barcode scanning and jsQR for QR code scanning -->
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
 <script>
 let stream = null;
 let scanning = false;
+let scannerType = 'quagga'; // 'quagga' for barcode, 'jsqr' for QR
 
 function toggleScanner() {
     const container = document.getElementById('qr-scanner-container');
-    const video = document.getElementById('qr-video');
     const btn = document.getElementById('scan-qr-btn');
     
     if (!scanning) {
@@ -98,30 +143,98 @@ function toggleScanner() {
         btn.innerHTML = '<i class="bi bi-x-circle"></i> Stop Scanning';
         btn.classList.remove('btn-outline-primary');
         btn.classList.add('btn-danger');
+        container.style.display = 'block';
     } else {
         stopScanner();
-        btn.innerHTML = '<i class="bi bi-qr-code-scan"></i> Scan QR Code';
+        btn.innerHTML = '<i class="bi bi-qr-code-scan"></i> Scan QR/Barcode';
         btn.classList.remove('btn-danger');
         btn.classList.add('btn-outline-primary');
+        container.style.display = 'none';
     }
 }
 
 function startScanner() {
     scanning = true;
-    const video = document.getElementById('qr-video');
-    const canvas = document.getElementById('qr-canvas');
-    const context = canvas.getContext('2d');
+    const viewport = document.getElementById('scanner-viewport');
+    viewport.innerHTML = '<div id="interactive" class="viewport"></div>';
+    
+    // Try QuaggaJS first (for barcodes), fallback to jsQR (for QR codes)
+    Quagga.init({
+        inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.querySelector('#interactive'),
+            constraints: {
+                width: 640,
+                height: 480,
+                facingMode: "environment" // Use back camera on mobile
+            }
+        },
+        locator: {
+            patchSize: "medium",
+            halfSample: true
+        },
+        numOfWorkers: 2,
+        decoder: {
+            readers: [
+                "code_128_reader",
+                "ean_reader",
+                "ean_8_reader",
+                "code_39_reader",
+                "code_39_vin_reader",
+                "codabar_reader",
+                "upc_reader",
+                "upc_e_reader",
+                "i2of5_reader"
+            ]
+        },
+        locate: true
+    }, function(err) {
+        if (err) {
+            console.log('QuaggaJS initialization error, falling back to QR scanner:', err);
+            startQRScanner();
+            return;
+        }
+        Quagga.start();
+    });
+    
+    Quagga.onDetected(function(result) {
+        if (scanning && result.codeResult) {
+            handleBarcode(result.codeResult.code);
+        }
+    });
+    
+    // Also start QR code scanner as backup
+    startQRScanner();
+}
+
+function startQRScanner() {
+    const video = document.createElement('video');
+    video.id = 'qr-video';
+    video.autoplay = true;
+    video.playsinline = true;
+    video.style.display = 'none';
+    const canvas = document.createElement('canvas');
+    canvas.id = 'qr-canvas';
+    canvas.style.display = 'none';
+    
+    const viewport = document.getElementById('scanner-viewport');
+    if (!document.getElementById('qr-video')) {
+        viewport.appendChild(video);
+        viewport.appendChild(canvas);
+    }
     
     navigator.mediaDevices.getUserMedia({ 
         video: { 
-            facingMode: 'environment' // Use back camera on mobile
+            facingMode: 'environment'
         } 
     })
     .then(function(mediaStream) {
         stream = mediaStream;
         video.srcObject = stream;
-        video.setAttribute('playsinline', true);
         video.play();
+        
+        const context = canvas.getContext('2d');
         
         function scanQR() {
             if (!scanning) return;
@@ -157,32 +270,61 @@ function startScanner() {
 
 function stopScanner() {
     scanning = false;
-    const video = document.getElementById('qr-video');
     
+    // Stop QuaggaJS
+    if (Quagga && typeof Quagga.stop === 'function') {
+        Quagga.stop();
+    }
+    
+    // Stop video stream
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
         stream = null;
     }
     
-    if (video.srcObject) {
+    const video = document.getElementById('qr-video');
+    if (video && video.srcObject) {
         video.srcObject = null;
     }
     
-    document.getElementById('qr-scanner-container').style.display = 'none';
+    // Clear viewport
+    const viewport = document.getElementById('scanner-viewport');
+    if (viewport) {
+        viewport.innerHTML = '';
+    }
+}
+
+function handleBarcode(barcodeData) {
+    // Try to parse as client number (format: FL-001 or just the number)
+    let clientNumber = barcodeData.trim();
+    
+    // If it's just a number, try to format it as FL-XXX
+    if (/^\d+$/.test(clientNumber)) {
+        clientNumber = 'FL-' + clientNumber.padStart(3, '0');
+    }
+    
+    verifyClient(clientNumber);
 }
 
 function handleQRCode(qrData) {
-    // Verify QR code via API
+    // Parse QR code data
+    verifyClient(qrData);
+}
+
+function verifyClient(codeData) {
+    // Verify code via API
     fetch('{{ url_for("volunteer.verify_qr") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ qr_data: qrData })
+        body: JSON.stringify({ qr_data: codeData })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            displayClientInfo(data.client);
+            
             // Fill in the client number
             document.getElementById('client_number').value = data.client.client_number;
             
@@ -190,30 +332,72 @@ function handleQRCode(qrData) {
             const statusDiv = document.getElementById('qr-status');
             statusDiv.style.display = 'block';
             statusDiv.className = 'alert alert-success mt-2';
-            statusDiv.innerHTML = `<i class="bi bi-check-circle"></i> Client found: <strong>${data.client.full_name}</strong> (${data.client.client_number})`;
+            statusDiv.innerHTML = `<i class="bi bi-check-circle"></i> Client verified: <strong>${data.client.full_name}</strong> (${data.client.client_number})`;
             
-            // Stop scanner
-            setTimeout(() => {
-                stopScanner();
-                document.getElementById('scan-qr-btn').innerHTML = '<i class="bi bi-qr-code-scan"></i> Scan QR Code';
-                document.getElementById('scan-qr-btn').classList.remove('btn-danger');
-                document.getElementById('scan-qr-btn').classList.add('btn-outline-primary');
-            }, 2000);
+            // Stop scanner after a short delay (if scanning)
+            if (scanning) {
+                setTimeout(() => {
+                    stopScanner();
+                    document.getElementById('scan-qr-btn').innerHTML = '<i class="bi bi-qr-code-scan"></i> Scan QR/Barcode';
+                    document.getElementById('scan-qr-btn').classList.remove('btn-danger');
+                    document.getElementById('scan-qr-btn').classList.add('btn-outline-primary');
+                    document.getElementById('qr-scanner-container').style.display = 'none';
+                }, 2000);
+            }
         } else {
+            // Hide verification info on error
+            document.getElementById('client-verification-info').style.display = 'none';
+            
             // Show error
             const statusDiv = document.getElementById('qr-status');
             statusDiv.style.display = 'block';
             statusDiv.className = 'alert alert-warning mt-2';
-            statusDiv.textContent = data.message || 'Invalid QR code';
+            statusDiv.textContent = data.message || 'Invalid code';
         }
     })
     .catch(error => {
-        console.error('Error verifying QR code:', error);
+        console.error('Error verifying code:', error);
+        document.getElementById('client-verification-info').style.display = 'none';
         const statusDiv = document.getElementById('qr-status');
         statusDiv.style.display = 'block';
         statusDiv.className = 'alert alert-danger mt-2';
-        statusDiv.textContent = 'Error verifying QR code. Please try again.';
+        statusDiv.textContent = 'Error verifying code. Please try again.';
     });
+}
+
+function displayClientInfo(client) {
+    // Display client verification info with photo
+    const verificationInfo = document.getElementById('client-verification-info');
+    const clientPhoto = document.getElementById('client-photo');
+    const clientName = document.getElementById('client-name');
+    const clientNumberDisplay = document.getElementById('client-number-display');
+    const clientEmail = document.getElementById('client-email');
+    
+    // Set client info
+    clientName.textContent = client.full_name;
+    clientNumberDisplay.textContent = client.client_number;
+    clientEmail.textContent = client.email;
+    
+    // Set photo if available
+    if (client.photo_path) {
+        clientPhoto.src = '/static/' + client.photo_path;
+        clientPhoto.style.display = 'block';
+    } else {
+        clientPhoto.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="120"%3E%3Crect fill="%23ddd" width="120" height="120"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="14" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ENo Photo%3C/text%3E%3C/svg%3E';
+    }
+    
+    verificationInfo.style.display = 'block';
+}
+
+function verifyClientManual(clientNumber) {
+    // Only verify if client number is not empty and looks valid
+    if (!clientNumber || clientNumber.trim().length === 0) {
+        document.getElementById('client-verification-info').style.display = 'none';
+        return;
+    }
+    
+    // Verify client number via API
+    verifyClient(clientNumber.trim());
 }
 
 // Cleanup when page is left
@@ -221,5 +405,24 @@ window.addEventListener('beforeunload', function() {
     stopScanner();
 });
 </script>
+<style>
+#interactive.viewport {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    border-radius: 8px;
+    border: 2px solid #28a745;
+    overflow: hidden;
+}
+
+/* Mobile scanner viewport */
+@media (max-width: 768px) {
+    #interactive.viewport {
+        max-width: 100%;
+        height: auto;
+    }
+}
+</style>
 {% endblock %}
 

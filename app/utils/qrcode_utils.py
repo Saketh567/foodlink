@@ -64,18 +64,38 @@ def get_client_qr_data(client_number):
 
 def parse_qr_data(qr_data):
     """
-    Parse QR code data and extract client number
+    Parse QR code or barcode data and extract client number
     
     Args:
-        qr_data: QR code scanned data
+        qr_data: QR code or barcode scanned data
     
     Returns:
         Client number or None if invalid
     """
+    if not qr_data:
+        return None
+    
+    qr_data = qr_data.strip()
+    
+    # Handle CLIENT: prefix format
     if qr_data.startswith("CLIENT:"):
-        return qr_data.replace("CLIENT:", "")
-    # Also accept raw client numbers
+        return qr_data.replace("CLIENT:", "").strip()
+    
+    # Handle raw client numbers with format FL-XXX
     if "-" in qr_data and len(qr_data.split("-")) == 2:
-        return qr_data
+        parts = qr_data.split("-")
+        if len(parts) == 2 and parts[0].isalpha() and parts[1].isdigit():
+            return qr_data
+    
+    # Handle numeric barcodes - assume they're client IDs and format as FL-XXX
+    if qr_data.isdigit():
+        # Format as FL-XXX (pad with zeros)
+        return f"FL-{qr_data.zfill(3)}"
+    
+    # Try to extract client number from various formats
+    # Handle cases like "FL001" (no dash)
+    if len(qr_data) >= 3 and qr_data[:2].isalpha() and qr_data[2:].isdigit():
+        return f"{qr_data[:2]}-{qr_data[2:]}"
+    
     return None
 

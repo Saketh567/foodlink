@@ -11,8 +11,10 @@
             <hr class="my-4 bg-white">
             <p>Join us in the fight against hunger. Every donation counts, every meal matters.</p>
             {% if not session.user_id %}
-                <a class="btn btn-light btn-lg me-2" href="{{ url_for('auth.register') }}" role="button">Get Started</a>
-                <a class="btn btn-outline-light btn-lg" href="{{ url_for('auth.login') }}" role="button">Login</a>
+                <div class="d-grid gap-2 d-md-block">
+                    <a class="btn btn-light btn-lg me-md-2 mb-2 mb-md-0" href="{{ url_for('auth.register') }}" role="button">Get Started</a>
+                    <a class="btn btn-outline-light btn-lg" href="{{ url_for('auth.login') }}" role="button">Login</a>
+                </div>
             {% endif %}
         </div>
     </div>
@@ -22,7 +24,7 @@
     <div class="col-md-4">
         <div class="card mb-4">
             <div class="card-body text-center">
-                <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+                <i class="bi bi-people-fill text-primary mobile-icon" style="font-size: 3rem;"></i>
                 <h5 class="card-title mt-3">For Families</h5>
                 <p class="card-text">Register to receive food assistance and support your family's needs.</p>
                 {% if not session.user_id %}
@@ -34,11 +36,11 @@
     <div class="col-md-4">
         <div class="card mb-4">
             <div class="card-body text-center">
-                <i class="bi bi-hand-heart-fill text-success" style="font-size: 3rem;"></i>
+                <i class="bi bi-hand-heart-fill text-success mobile-icon" style="font-size: 3rem;"></i>
                 <h5 class="card-title mt-3">For Volunteers</h5>
                 <p class="card-text">Help collect and distribute food to families in your community.</p>
                 {% if not session.user_id %}
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-success">Join as Volunteer</a>
+                    <a href="{{ url_for('auth.register_volunteer') }}" class="btn btn-success">Join as Volunteer</a>
                 {% endif %}
             </div>
         </div>
@@ -46,7 +48,7 @@
     <div class="col-md-4">
         <div class="card mb-4">
             <div class="card-body text-center">
-                <i class="bi bi-gift-fill text-warning" style="font-size: 3rem;"></i>
+                <i class="bi bi-gift-fill text-warning mobile-icon" style="font-size: 3rem;"></i>
                 <h5 class="card-title mt-3">Make a Difference</h5>
                 <p class="card-text">Together, we can reduce food waste and feed those in need.</p>
             </div>

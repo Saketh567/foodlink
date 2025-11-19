@@ -24,7 +24,13 @@
                     </div>
                 </form>
                 <hr>
-                <p class="text-center mb-0">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+                <div class="text-center">
+                    <p class="mb-2">Don't have an account?</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary">Register as Client</a>
+                        <a href="{{ url_for('auth.register_volunteer') }}" class="btn btn-outline-success">Register as Volunteer</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
