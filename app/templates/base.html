@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block meta %}
+    <meta name="description" content="FoodLink unifies community food programs with QR pickups, volunteer ops, and admin intelligence.">
+    {% endblock %}
+    <title>{% block title %}FoodLink Society{% endblock %}</title>
+    <link rel="canonical" href="{{ request.url }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+    </noscript>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/foodlink-mark.svg') }}" type="image/svg+xml">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="app-body">
+    <a class="skip-link" href="#mainContent">Skip to content</a>
+
+    {% block announcement %}
+    <div class="announcement-bar text-white" role="status">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span class="fw-semibold">FoodLink Society — Citywide Relief OS</span>
+            <div class="d-flex flex-wrap align-items-center gap-3 small">
+                <span class="opacity-75">support@foodlink.org</span>
+                <span class="opacity-50">+1 (555) 123-4567</span>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    <header class="site-header sticky-top shadow-sm bg-white">
+        <nav class="navbar navbar-expand-lg" aria-label="Primary navigation">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-3" href="{{ url_for('index') }}">
+                    <img class="brand-logo" src="{{ url_for('static', filename='img/foodlink-mark.svg') }}" alt="FoodLink logo">
+                    <div class="brand-lockup">
+                        <span class="brand-title">FoodLink Society</span>
+                        <small class="brand-tagline text-muted">Community Provisioning Suite</small>
+                    </div>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Solutions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#stories">Impact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#resources">Resources</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Portals
+                            </a>
+                            <ul class="dropdown-menu shadow border-0 rounded-4">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.login', role='client') }}">Client Login</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.login', role='volunteer') }}">Volunteer Login</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.login', role='admin') }}">Admin Login</a></li>
+                            </ul>
+                        </li>
+                        {% if session.get('user_id') %}
+                            {% set role = session.get('role') %}
+                            {% if role == 'client' %}
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('client.client_dashboard') }}">Dashboard</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('client.update_profile') }}">Profile</a></li>
+                            {% elif role == 'volunteer' %}
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('volunteer.volunteer_dashboard') }}">Dashboard</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('volunteer.signin') }}">Sign In/Scan</a></li>
+                            {% elif role == 'admin' %}
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                            {% endif %}
+                            <li class="nav-item">
+                                <a class="nav-link position-relative" href="{{ url_for('notifications.list_notifications') }}">
+                                    Notifications
+                                    {% if unread_notifications %}
+                                    <span class="badge rounded-pill bg-danger position-absolute translate-middle ms-2 mt-n2">
+                                        {{ unread_notifications }}
+                                    </span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown ms-lg-2">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    My Account
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4">
+                                    <li><a class="dropdown-item" href="{{ url_for('auth.change_password') }}">Change Password</a></li>
+                                    {% if role == 'client' %}
+                                        <li><a class="dropdown-item" href="{{ url_for('client.update_profile') }}">Update Profile</a></li>
+                                    {% endif %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">Sign out</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item ms-lg-3">
+                                <a class="btn btn-primary btn-sm" href="{{ url_for('auth.login') }}">Launch Portal</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main id="mainContent" class="page-shell">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer text-white mt-5 pt-5">
+        <div class="container pb-5">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img class="brand-logo brand-logo-invert" src="{{ url_for('static', filename='img/foodlink-mark.svg') }}" alt="">
+                        <div>
+                            <h5 class="mb-0">FoodLink Society</h5>
+                            <small class="text-white-50">Citywide Relief OS</small>
+                        </div>
+                    </div>
+                    <p class="small text-white-75">Bridging community partners, volunteers, and households for reliable access to essential staples.</p>
+                    <ul class="list-inline small mb-0">
+                        <li class="list-inline-item"><a class="link-light text-decoration-none" href="mailto:support@foodlink.org">support@foodlink.org</a></li>
+                        <li class="list-inline-item text-white-50">|</li>
+                        <li class="list-inline-item"><span class="text-white-50">+1 (555) 123-4567</span></li>
+                    </ul>
+                </div>
+                <div class="col-sm-4 col-lg-2">
+                    <h6 class="text-uppercase text-white-50 mb-3">Product</h6>
+                    <ul class="list-unstyled small mb-0">
+                        <li><a class="link-light text-decoration-none d-inline-flex align-items-center gap-2 mb-2" href="{{ url_for('index') }}#solutions"><span class="bullet-dot"></span>Solutions</a></li>
+                        <li><a class="link-light text-decoration-none d-inline-flex align-items-center gap-2 mb-2" href="#stories"><span class="bullet-dot"></span>Stories</a></li>
+                        <li><a class="link-light text-decoration-none d-inline-flex align-items-center gap-2" href="{{ url_for('auth.login') }}"><span class="bullet-dot"></span>Portal Login</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-4 col-lg-3" id="resources">
+                    <h6 class="text-uppercase text-white-50 mb-3">Resources</h6>
+                    <ul class="list-unstyled small mb-0">
+                        <li><a class="link-light text-decoration-none d-inline-flex align-items-center gap-2 mb-2" href="{{ url_for('auth.register') }}"><span class="bullet-dot"></span>Client Registration</a></li>
+                        <li><a class="link-light text-decoration-none d-inline-flex align-items-center gap-2 mb-2" href="#"><span class="bullet-dot"></span>Volunteer Training</a></li>
+                        <li><a class="link-light text-decoration-none d-inline-flex align-items-center gap-2" href="#"><span class="bullet-dot"></span>Security &amp; Privacy</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-4 col-lg-3">
+                    <h6 class="text-uppercase text-white-50 mb-3">Stay informed</h6>
+                    <form class="newsletter-form" action="#" method="post">
+                        <label class="visually-hidden" for="newsletterEmail">Email address</label>
+                        <div class="input-group">
+                            <input type="email" class="form-control" id="newsletterEmail" name="email" placeholder="you@example.org" required>
+                            <button class="btn btn-outline-light" type="submit">Join</button>
+                        </div>
+                        <p class="small text-white-50 mt-2">Monthly insights on food security operations.</p>
+                    </form>
+                </div>
+            </div>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center pt-4 mt-4 border-top border-white-10">
+                <p class="small text-white-50 mb-2 mb-md-0">&copy; {{ current_year or 2025 }} FoodLink Society. All rights reserved.</p>
+                <div class="d-flex gap-3 small">
+                    <a class="link-light text-decoration-none" href="#">Privacy</a>
+                    <a class="link-light text-decoration-none" href="#">Terms</a>
+                    <a class="link-light text-decoration-none" href="#">Accessibility</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

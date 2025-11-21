@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "partials/components.html" import page_header %}
+
+{% block title %}All Distributions{% endblock %}
+
+{% block content %}
+{% call page_header("Records", "All Distributions Logged", "Monitor every pickup you've recorded for audit-ready accuracy.") %}
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('volunteer.volunteer_dashboard') }}">Back to Dashboard</a>
+{% endcall %}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="card-title mb-1">Distribution Log</h5>
+                <p class="text-muted small mb-0">Sorted with the most recent pickups first.</p>
+            </div>
+            <a class="btn btn-outline-primary btn-sm" href="{{ url_for('volunteer.scan_qr') }}">Log New Pickup</a>
+        </div>
+
+        {% if distributions %}
+            <div class="table-responsive">
+                <table class="table table-hover table-modern align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Weight (kg)</th>
+                            <th>Items</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in distributions %}
+                        <tr>
+                            <td class="fw-semibold">{{ d.distribution_date.strftime("%b %d, %Y %H:%M") if d.distribution_date else "N/A" }}</td>
+                            <td>{{ d.client_number }} ({{ d.client_name }})</td>
+                            <td class="fw-semibold">{{ d.weight_kg }}</td>
+                            <td>{{ d.items_description|default("&mdash;", true)|safe }}</td>
+                            <td>{{ d.notes|default("&mdash;", true)|safe }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info mb-0 rounded-4">No distributions recorded yet.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

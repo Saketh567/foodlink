@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Pending Client Approvals</h2>
+
+{% if clients %}
+<table border="1" cellspacing="0" cellpadding="6">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Family Size</th>
+        <th>Action</th>
+    </tr>
+    {% for c in clients %}
+    <tr>
+        <td>{{ c.full_name }}</td>
+        <td>{{ c.email }}</td>
+        <td>{{ c.address }}</td>
+        <td>{{ c.family_size }}</td>
+        <td>
+            <a href="{{ url_for('admin.client_profile', client_id=c.client_id) }}">
+                View
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No pending clients.</p>
+{% endif %}
+{% endblock %}

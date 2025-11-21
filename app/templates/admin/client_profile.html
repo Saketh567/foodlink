@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% from "partials/components.html" import page_header %}
+{% block title %}Client Profile{% endblock %}
+
+{% block content %}
+{% if client %}
+{% call page_header("Client Services", client.full_name, client.client_number or "Client number pending") %}
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+        <span class="chip {% if client.verification_status == 'verified' %}chip-success{% elif client.verification_status == 'pending' %}chip-warning{% else %}chip-neutral{% endif %}">
+            {{ client.verification_status|title }}
+        </span>
+        <span class="chip chip-neutral">Family Size: {{ client.family_size }}</span>
+        <span class="chip chip-neutral">No-show count: {{ client.no_show_count }}</span>
+        <a class="btn btn-outline-secondary btn-sm ms-lg-2" href="{{ url_for('admin.verify_clients') }}">Back</a>
+    </div>
+{% endcall %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><strong>Email:</strong> {{ client.email }}</li>
+                    <li class="mb-2"><strong>Phone:</strong> {{ client.phone or "N/A" }}</li>
+                    <li class="mb-2"><strong>Address:</strong> {{ client.address or "N/A" }}</li>
+                    <li class="mb-2"><strong>Registered:</strong> {{ client.created_at.strftime("%b %d, %Y") }}</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><strong>Verification:</strong>
+                        <span class="badge-soft badge-soft-info text-capitalize">{{ client.verification_status }}</span>
+                    </li>
+                    <li class="mb-2"><strong>Allergies:</strong> {{ client.allergies or "None" }}</li>
+                    <li class="mb-2"><strong>Food Pref:</strong> {{ client.food_preferences or "None" }}</li>
+                    <li class="mb-2"><strong>No-Show Count:</strong> {{ client.no_show_count }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% if client.verification_status == "pending" %}
+    <div class="card-footer d-flex gap-2 flex-wrap">
+        <form method="POST" action="{{ url_for('admin.approve_client', client_id=client.client_id) }}">
+            <button class="btn btn-success" type="submit">Approve</button>
+        </form>
+        <form method="POST" action="{{ url_for('admin.reject_client', client_id=client.client_id) }}">
+            <button class="btn btn-danger" type="submit">Reject</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Proxy Requests</h5>
+                    <span class="badge-soft badge-soft-info">{{ proxies|length if proxies else 0 }} records</span>
+                </div>
+                {% set proxy_badges = {
+                    "pending": "bg-warning text-dark",
+                    "approved": "bg-success",
+                    "rejected": "bg-danger",
+                    "revoked": "bg-secondary"
+                } %}
+                {% if proxies %}
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Requested</th>
+                                <th>Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in proxies %}
+                            <tr>
+                                <td>{{ p.proxy_name }}</td>
+                                <td>
+                                    <span class="badge {{ proxy_badges.get(p.status, 'bg-secondary') }}">
+                                        {{ p.status|title }}
+                                    </span>
+                                </td>
+                                <td>{{ p.created_at.strftime("%b %d, %Y") }}</td>
+                                <td>
+                                    {% if p.updated_at %}
+                                        {{ p.updated_at.strftime("%b %d, %Y") }}
+                                    {% else %}
+                                        &mdash;
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No proxy records.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Latest Distributions</h5>
+                {% if distributions %}
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Volunteer</th>
+                                <th>Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in distributions %}
+                            <tr>
+                                <td>{{ d.distribution_date.strftime("%b %d, %Y") }}</td>
+                                <td>{{ d.volunteer_name }}</td>
+                                <td>{{ d.weight_kg }} kg</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No distributions recorded.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">Admin Notes</h5>
+            <span class="text-muted small">Visible to staff only</span>
+        </div>
+        <form method="POST" action="{{ url_for('admin.update_client_notes', client_id=client.client_id) }}">
+            <div class="mb-3">
+                <textarea class="form-control" rows="4" name="notes" placeholder="Add context or follow-up info">{{ client.notes|default('', true) }}</textarea>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Use notes to track follow-ups or special circumstances.</span>
+                <button class="btn btn-primary btn-sm" type="submit">Save Notes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-danger">Client not found.</div>
+{% endif %}
+{% endblock %}

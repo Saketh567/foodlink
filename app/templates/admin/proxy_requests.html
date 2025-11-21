@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "partials/components.html" import page_header %}
+{% block title %}Proxy Requests{% endblock %}
+
+{% block content %}
+{% call page_header("Client Services", "Pending Proxy Requests", "Approve trusted representatives for households needing assistance.") %}
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('admin.dashboard') }}">Back</a>
+{% endcall %}
+
+{% if proxies %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">Review Requests</h5>
+            <span class="badge-soft badge-soft-info">{{ proxies|length }} pending</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-modern align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Proxy Name</th>
+                        <th>Client</th>
+                        <th>Proxy Contact</th>
+                        <th>Requested</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in proxies %}
+                    <tr>
+                        <td>{{ p.proxy_name }}</td>
+                        <td>{{ p.client_number }} ({{ p.client_name }})</td>
+                        <td>
+                            {% if p.proxy_phone %}
+                            <div>{{ p.proxy_phone }}</div>
+                            {% endif %}
+                            {% if p.proxy_email %}
+                            <div class="text-muted small">{{ p.proxy_email }}</div>
+                            {% else %}
+                            <span class="text-muted small">No email on file</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ p.created_at.strftime("%b %d, %Y") }}</td>
+                        <td class="d-flex flex-wrap gap-2">
+                            <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('admin.client_profile', client_id=p.client_id) }}">View Client</a>
+                            <form method="POST" action="{{ url_for('admin.approve_proxy', proxy_id=p.proxy_id) }}">
+                                <button class="btn btn-success btn-sm" type="submit">Approve</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin.reject_proxy', proxy_id=p.proxy_id) }}">
+                                <button class="btn btn-danger btn-sm" type="submit">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info rounded-4">No pending proxy requests.</div>
+{% endif %}
+{% endblock %}

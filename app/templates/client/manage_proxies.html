@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Proxy Pickup{% endblock %}
+
+{% block content %}
+{% set badge_classes = {
+    "approved": "bg-success",
+    "pending": "bg-warning text-dark",
+    "rejected": "bg-danger",
+    "revoked": "bg-secondary"
+} %}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h1 class="mb-1">Manage Proxy Pickup</h1>
+        <p class="text-muted mb-0">Authorize trusted helpers to collect food on your behalf.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('client.add_proxy') }}">+ Add New Proxy</a>
+    {% if proxies %}
+    <div class="w-100"></div>
+    {% endif %}
+</div>
+
+{% if proxies %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Status</th>
+                    <th>Requested</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in proxies %}
+                <tr>
+                    <td class="fw-semibold">{{ p.proxy_name }}</td>
+                    <td>
+                        {% if p.proxy_phone %}<div>{{ p.proxy_phone }}</div>{% endif %}
+                        {% if p.proxy_email %}<div class="text-muted small">{{ p.proxy_email }}</div>{% endif %}
+                        {% if not p.proxy_phone and not p.proxy_email %}
+                            <span class="text-muted small">No contact info</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge {{ badge_classes.get(p.status, 'bg-secondary') }}">
+                            {{ p.status|capitalize }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if p.created_at %}
+                            {{ p.created_at.strftime("%b %d, %Y") }}
+                        {% else %}
+                            &mdash;
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if p.status != "approved" %}
+                        <form method="POST"
+                              action="{{ url_for('client.delete_proxy', proxy_id=p.proxy_id) }}"
+                              onsubmit="return confirm('Remove this proxy request?');"
+                              class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted small">Approved</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        No proxy requests yet. Use the button above to submit your first proxy authorization.
+    </div>
+{% endif %}
+
+<a class="btn btn-outline-secondary mt-3" href="{{ url_for('client.client_dashboard') }}">Back to Dashboard</a>
+{% endblock %}

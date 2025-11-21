@@ -1,0 +1,28 @@
+{% macro page_header(eyebrow='', title='', subtitle='') -%}
+<section class="page-heading">
+    <div>
+        {% if eyebrow %}<p class="eyebrow">{{ eyebrow }}</p>{% endif %}
+        {% if title %}<h1 class="mb-1">{{ title }}</h1>{% endif %}
+        {% if subtitle %}<p class="mb-0 text-muted">{{ subtitle }}</p>{% endif %}
+    </div>
+    {% if caller %}
+    <div class="heading-actions text-end">
+        {{ caller() }}
+    </div>
+    {% endif %}
+</section>
+{%- endmacro %}
+
+{% macro stat_pill(label, value, tone='neutral', caption='') -%}
+{% set tone_class = {
+    'success': 'text-success',
+    'warning': 'text-warning',
+    'danger': 'text-danger',
+    'info': 'text-primary'
+}.get(tone, '') %}
+<div class="stat-pill">
+    <div class="label">{{ label }}</div>
+    <div class="value {{ tone_class }}">{{ value }}</div>
+    {% if caption %}<div class="caption text-muted small">{{ caption }}</div>{% endif %}
+</div>
+{%- endmacro %}

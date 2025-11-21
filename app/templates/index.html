@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% block title %}FoodLink | Citywide Relief OS{% endblock %}
+
+{% block content %}
+<section class="hero hero-mesh mb-5" id="solutions">
+    <div class="row align-items-center g-4">
+        <div class="col-xl-6">
+            <span class="eyebrow text-uppercase text-muted mb-3 d-inline-block">Citywide Relief OS</span>
+            <h1 class="display-4 fw-bold mb-3">Orchestrate registrations, QR pickups, and outreach in one expert surface.</h1>
+            <p class="lead text-muted mb-4">FoodLink unifies admins, volunteers, and families so every kilogram routed through your pantry is visible, auditable, and ready for rapid response.</p>
+            <div class="d-flex flex-wrap gap-3 mb-4 hero-ctas">
+                <a class="btn btn-primary btn-lg" href="{{ url_for('auth.login') }}">Launch operations</a>
+                <a class="btn btn-outline-secondary btn-lg" href="{{ url_for('auth.register') }}">Enroll a household</a>
+            </div>
+            <div class="trust-bar">
+                <p class="text-muted small mb-2">Trusted by community food programs across BC</p>
+                <div class="d-flex flex-wrap gap-3 text-uppercase text-muted small">
+                    <span class="trust-chip">HarvestCo</span>
+                    <span class="trust-chip">Urban Pantry</span>
+                    <span class="trust-chip">NorthStar Food Hub</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="dashboard-preview card border-0 shadow-sm p-4 position-relative overflow-hidden">
+                <div class="floating-chip">Live check-ins</div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <p class="text-uppercase small text-muted mb-1">Households served</p>
+                        <p class="display-5 fw-semibold mb-0">1,284</p>
+                    </div>
+                    <div>
+                        <p class="text-uppercase small text-muted mb-1">On-duty volunteers</p>
+                        <p class="display-5 fw-semibold mb-0 text-success">54</p>
+                    </div>
+                </div>
+                <div class="mini-table">
+                    <div class="mini-row">
+                        <span class="badge-soft badge-soft-info">QR</span>
+                        <span class="text-muted small">Garcia Family</span>
+                        <span class="fw-semibold">18kg</span>
+                    </div>
+                    <div class="mini-row">
+                        <span class="badge-soft badge-soft-info">Proxy</span>
+                        <span class="text-muted small">Singh Household</span>
+                        <span class="fw-semibold">12kg</span>
+                    </div>
+                    <div class="mini-row">
+                        <span class="badge-soft badge-soft-info">Manual</span>
+                        <span class="text-muted small">Rivera Family</span>
+                        <span class="fw-semibold">9kg</span>
+                    </div>
+                </div>
+                <div class="stat-chip-grid mt-4">
+                    <div class="stat-chip">
+                        <p class="label">Avg wait time</p>
+                        <p class="value">06m</p>
+                    </div>
+                    <div class="stat-chip">
+                        <p class="label">No-show alerts</p>
+                        <p class="value text-warning">3</p>
+                    </div>
+                    <div class="stat-chip">
+                        <p class="label">Verified proxies</p>
+                        <p class="value">87</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="text-center mb-5">
+        <p class="text-uppercase text-muted small">Why teams choose FoodLink</p>
+        <h2 class="fw-bold">A unified workflow for every role</h2>
+        <p class="text-muted mb-0">Replace spreadsheets with components built for registrations, pickups, and compliance.</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <article class="feature-card h-100">
+                <div class="icon-circle"><span class="small fw-semibold">CS</span></div>
+                <h3>Client services</h3>
+                <p class="text-muted">Guided registration, document tracking, and one-tap QR issuance keep households informed.</p>
+                <ul class="small text-muted ps-3">
+                    <li>Automated verification tasks</li>
+                    <li>Self-serve proxy management</li>
+                    <li>Household history timeline</li>
+                </ul>
+                <a class="stretched-link text-decoration-none fw-semibold" href="{{ url_for('auth.register') }}">See client portal &rarr;</a>
+            </article>
+        </div>
+        <div class="col-md-4">
+            <article class="feature-card h-100">
+                <div class="icon-circle"><span class="small fw-semibold">VO</span></div>
+                <h3>Volunteer ops</h3>
+                <p class="text-muted">Live QR scanning, shift tracking, and alerts create a professional pickup command center.</p>
+                <ul class="small text-muted ps-3">
+                    <li>Device-ready QR scanner</li>
+                    <li>Shift + attendance log</li>
+                    <li>Guided distribution forms</li>
+                </ul>
+                <a class="stretched-link text-decoration-none fw-semibold" href="{{ url_for('auth.login', role='volunteer') }}">Train your team &rarr;</a>
+            </article>
+        </div>
+        <div class="col-md-4">
+            <article class="feature-card h-100">
+                <div class="icon-circle"><span class="small fw-semibold">PL</span></div>
+                <h3>Program leadership</h3>
+                <p class="text-muted">Dashboards, no-show analytics, and notifications keep admins ahead of demand curves.</p>
+                <ul class="small text-muted ps-3">
+                    <li>Realtime KPI wall</li>
+                    <li>Role-specific notifications</li>
+                    <li>Export-ready audit logs</li>
+                </ul>
+                <a class="stretched-link text-decoration-none fw-semibold" href="{{ url_for('auth.login', role='admin') }}">Explore admin console &rarr;</a>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="metrics-strip py-4 mb-5">
+    <div class="container">
+        <div class="row g-3 text-center text-md-start">
+            <div class="col-md-4">
+                <div class="stat-chip">
+                    <p class="label text-muted">Households on platform</p>
+                    <p class="value display-6 mb-0">3,200+</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-chip">
+                    <p class="label text-muted">Average wait time</p>
+                    <p class="value display-6 mb-0">&darr; 42%</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-chip">
+                    <p class="label text-muted">Volunteer hours logged</p>
+                    <p class="value display-6 mb-0">18k</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 process-grid">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-6">
+            <h2 class="fw-bold mb-4">From onboarding to delivery with total clarity</h2>
+            <ol class="timeline list-unstyled mb-0">
+                <li>
+                    <h6>1. Intake & verification</h6>
+                    <p class="text-muted">Clients upload documents, admins approve, and QR passes are issued instantly.</p>
+                </li>
+                <li>
+                    <h6>2. Pickup orchestration</h6>
+                    <p class="text-muted">Volunteers sign in, scan QR codes, and log distributions with required notes.</p>
+                </li>
+                <li>
+                    <h6>3. Insight & follow up</h6>
+                    <p class="text-muted">Leadership monitors KPIs, no-shows, and outreach tasks in one dashboard.</p>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 glass-panel">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-2">Field testimonial</p>
+                    <blockquote class="blockquote mb-0">
+                        <p>"FoodLink cut our ride-along onboarding time in half. Volunteers can scan, verify, and log without ever switching tabs."</p>
+                        <footer class="blockquote-footer mt-2">Program Director, Community Harvest</footer>
+                    </blockquote>
+                </div>
+            </div>
+            <div class="card shadow-sm border-0 glass-panel mt-3">
+                <div class="card-body">
+                    <blockquote class="blockquote mb-0">
+                        <p>"Families trust the experience because they can see their QR, history, and proxy approvals in one place."</p>
+                        <footer class="blockquote-footer mt-2">Client Services Coordinator</footer>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-6">
+            <div class="feature-panel card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <span class="badge-soft badge-soft-info mb-3">Realtime operations</span>
+                    <h3 class="fw-bold">Deploy QR logistics and proxy management without extra hardware.</h3>
+                    <p class="text-muted">Our QR toolkit works on any modern tablet or phone, with secure, expiring tokens tied to each household.</p>
+                    <ul class="ps-3 text-muted small mb-0">
+                        <li>Session-based QR validation</li>
+                        <li>Proxy approvals with audit log</li>
+                        <li>Offline-safe fallback flows</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="feature-panel card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <span class="badge-soft badge-soft-success mb-3">Admin intelligence</span>
+                    <h3 class="fw-bold">Spot trends before they become shortages.</h3>
+                    <p class="text-muted">Track no-shows, distribution weights, and volunteer coverage with dashboard-grade analytics.</p>
+                    <ul class="ps-3 text-muted small mb-0">
+                        <li>No-show heatmaps</li>
+                        <li>Volunteer capacity planning</li>
+                        <li>Export-ready compliance reports</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5" id="stories">
+    <div class="text-center mb-4">
+        <p class="text-uppercase text-muted small">Testimonials</p>
+        <h2 class="fw-bold">Teams move faster with FoodLink</h2>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <article class="testimonial-card h-100 card border-0 shadow-sm">
+                <div class="card-body">
+                    <p>"We reduced check-in lines by 40% in one month. Volunteers simply scan, confirm, and log without leaving the dashboard."</p>
+                    <div class="mt-3">
+                        <h6 class="mb-0">Logistics Lead</h6>
+                        <small class="text-muted">Regional Relief Network</small>
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="col-md-4">
+            <article class="testimonial-card h-100 card border-0 shadow-sm">
+                <div class="card-body">
+                    <p>"Our audit trail is finally airtight. Every proxy approval, every pickup, every notification is centralized."</p>
+                    <div class="mt-3">
+                        <h6 class="mb-0">Director of Programs</h6>
+                        <small class="text-muted">Community Pantry Coalition</small>
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="col-md-4">
+            <article class="testimonial-card h-100 card border-0 shadow-sm">
+                <div class="card-body">
+                    <p>"Clients love seeing their QR and history on one screen. It builds trust and keeps everyone informed."</p>
+                    <div class="mt-3">
+                        <h6 class="mb-0">Client Services Manager</h6>
+                        <small class="text-muted">Urban Outreach Society</small>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-5">
+            <div class="faq-intro">
+                <p class="text-uppercase text-muted small mb-2">FAQ</p>
+                <h2 class="fw-bold">Answers for program directors and coordinators</h2>
+                <p class="text-muted">Have more questions? Our team is ready to walk you through onboarding, data migration, and ongoing support.</p>
+                <a class="btn btn-outline-primary" href="mailto:support@foodlink.org">Contact our team</a>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqOneCollapse" aria-expanded="true" aria-controls="faqOneCollapse">
+                            How quickly can we onboard?
+                        </button>
+                    </h2>
+                    <div id="faqOneCollapse" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Most programs launch within two weeks with guided onboarding, QR imports, and volunteer training.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqTwoCollapse" aria-expanded="false" aria-controls="#faqTwoCollapse">
+                            Do you support multiple pickup sites?
+                        </button>
+                    </h2>
+                    <div id="faqTwoCollapse" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes, FoodLink handles multi-site scheduling, proxy rules, and localized notifications across hubs.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqThreeCollapse" aria-expanded="false" aria-controls="#faqThreeCollapse">
+                            How is data secured?
+                        </button>
+                    </h2>
+                    <div id="faqThreeCollapse" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Data is encrypted in transit and at rest. Role-based permissions and audit logs keep access tight.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="cta-slab gradient-cta p-5 border-0 text-center text-white rounded-4">
+        <p class="text-uppercase small text-white-50 mb-2">Your next rollout</p>
+        <h2 class="fw-bold text-white mb-3">Ready to elevate every pickup touchpoint?</h2>
+        <p class="text-white-75 mb-4">Schedule a walkthrough or invite your team into the portal to experience FoodLink live.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a class="btn btn-light btn-lg" href="{{ url_for('auth.login') }}">Launch the portal</a>
+            <a class="btn btn-outline-light btn-lg" href="mailto:support@foodlink.org">Book a walkthrough</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

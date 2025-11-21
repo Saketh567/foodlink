@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Shifts & Sign-ins{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+        <p class="text-uppercase text-muted small mb-1">Volunteer</p>
+        <h1 class="h4 mb-0">Shifts &amp; Sign-ins</h1>
+    </div>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('volunteer.volunteer_dashboard') }}">Back to Dashboard</a>
+</div>
+
+{% if signins %}
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Signed In</th>
+                <th>Signed Out</th>
+                <th>Status</th>
+                <th>Method</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in signins %}
+            <tr>
+                <td>{{ row.signin_time.strftime("%b %d, %Y %H:%M") }}</td>
+                <td>
+                    {% if row.signout_time %}
+                        {{ row.signout_time.strftime("%b %d, %Y %H:%M") }}
+                    {% else %}
+                        <span class="text-warning">Active</span>
+                    {% endif %}
+                </td>
+                <td class="text-capitalize">{{ row.status.replace('_', ' ') }}</td>
+                <td class="text-capitalize">{{ row.method }}</td>
+                <td>{{ row.notes or '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info">No shift history available yet.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}No-Show Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+        <p class="text-uppercase text-muted small mb-1">Attendance Monitoring</p>
+        <h1 class="h4 mb-0">No-Show Manager</h1>
+    </div>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('volunteer.volunteer_dashboard') }}">Back to Dashboard</a>
+</div>
+
+{% if summary %}
+<div class="alert alert-info">
+    <div class="fw-semibold">Summary</div>
+    <div>Expected: {{ summary.expected }} | Actual: {{ summary.actual }} | Missing: {{ summary.difference }}</div>
+    {% if summary.logged %}
+    <div class="mt-2 small">Marked no-show: {{ summary.logged|length }} clients.</div>
+    {% endif %}
+    {% if summary.not_found %}
+    <div class="mt-1 small text-muted">Not found: {{ summary.not_found | join(', ') }}</div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Log No-Shows</h5>
+                <form method="POST">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label" for="expected_clients">Expected Clients</label>
+                            <input type="number" class="form-control" id="expected_clients" name="expected_clients"
+                                   min="0" value="{{ form_values.expected_clients or '' }}" required>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label" for="actual_clients">Arrived Clients</label>
+                            <input type="number" class="form-control" id="actual_clients" name="actual_clients"
+                                   min="0" value="{{ form_values.actual_clients or '' }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 mt-3">
+                        <label class="form-label" for="missing_clients">Client Numbers or Emails</label>
+                        <textarea class="form-control" id="missing_clients" name="missing_clients" rows="4"
+                                  placeholder="Enter each missing client's number (e.g., CL0005) or email, separated by commas or new lines.">{{ form_values.missing_clients or '' }}</textarea>
+                        <div class="form-text">Only listed entries will be marked as no-show to keep records accurate.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="reason">Reason / Notes</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="2"
+                                  placeholder="Optional context for admin follow-up.">{{ form_values.reason or '' }}</textarea>
+                    </div>
+
+                    <div class="text-end">
+                        <button class="btn btn-danger" type="submit">Log No-Shows</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Attendance Snapshot</h5>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="h4 mb-0">{{ stats.today }}</div>
+                        <p class="text-muted small mb-0">Today</p>
+                    </div>
+                    <div class="col-4">
+                        <div class="h4 mb-0">{{ stats.week }}</div>
+                        <p class="text-muted small mb-0">Last 7 days</p>
+                    </div>
+                    <div class="col-4">
+                        <div class="h4 mb-0">{{ stats.total }}</div>
+                        <p class="text-muted small mb-0">All Time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title mb-0">High-Risk Clients</h5>
+                    <span class="badge bg-warning text-dark">Threshold {{ threshold }}</span>
+                </div>
+                {% if high_risk %}
+                    <ul class="list-group list-group-flush">
+                        {% for client in high_risk %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-semibold">{{ client.full_name }}</div>
+                                <div class="text-muted small">{{ client.client_number }}</div>
+                            </div>
+                            <span class="badge bg-danger">{{ client.no_show_count }} no-shows</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">No clients currently over the threshold.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">Recently Logged No-Shows</h5>
+        </div>
+
+        {% if recent_logs %}
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in recent_logs %}
+                        <tr>
+                            <td>{{ log.created_at.strftime("%b %d, %Y %H:%M") }}</td>
+                            <td>{{ log.client_name }} ({{ log.client_number }})</td>
+                            <td>{{ log.reason or 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">You have not logged any no-shows yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "partials/components.html" import page_header %}
+{% block title %}Verify Clients{% endblock %}
+
+{% block content %}
+{% call page_header("Client Services", "Client Verification", "Review applications, confirm documentation, and activate households.") %}
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('admin.dashboard') }}">Back</a>
+{% endcall %}
+
+{% if pending %}
+<div class="row g-3">
+    {% for c in pending %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title mb-0">{{ c.full_name }}</h5>
+                    <span class="badge-soft badge-soft-warning">{{ c.verification_status|title }}</span>
+                </div>
+                <p class="text-muted mb-2">{{ c.email }}</p>
+                <p class="mb-1"><strong>Address:</strong> {{ c.address or "N/A" }}</p>
+                <p class="mb-1"><strong>Family Size:</strong> {{ c.family_size }}</p>
+                {% if c.allergies %}<p class="mb-1"><strong>Allergies:</strong> {{ c.allergies }}</p>{% endif %}
+                {% if c.food_preferences %}<p class="mb-1"><strong>Food Pref:</strong> {{ c.food_preferences }}</p>{% endif %}
+                {% if c.notes %}<p class="mb-1"><strong>Notes:</strong> {{ c.notes }}</p>{% endif %}
+                <p class="text-muted small mb-0">Submitted {{ c.created_at.strftime("%b %d, %Y") }}</p>
+            </div>
+            <div class="card-footer d-flex flex-wrap gap-2">
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.client_profile', client_id=c.client_id) }}">View</a>
+                <form method="POST" action="{{ url_for('admin.approve_client', client_id=c.client_id) }}">
+                    <button class="btn btn-sm btn-success" type="submit">Approve</button>
+                </form>
+                <form method="POST" action="{{ url_for('admin.reject_client', client_id=c.client_id) }}">
+                    <button class="btn btn-sm btn-danger" type="submit">Reject</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info rounded-4">No clients pending verification.</div>
+{% endif %}
+{% endblock %}

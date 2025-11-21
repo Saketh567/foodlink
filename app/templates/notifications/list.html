@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+        <p class="text-uppercase text-muted small mb-1">Inbox</p>
+        <h1 class="h4 mb-0">Notifications</h1>
+        <p class="text-muted small mb-0">{{ unread_count }} unread</p>
+    </div>
+    <form method="POST" action="{{ url_for('notifications.mark_all_read') }}">
+        <button class="btn btn-outline-secondary btn-sm" type="submit" {% if unread_count == 0 %}disabled{% endif %}>
+            Mark All Read
+        </button>
+    </form>
+</div>
+
+<div class="mb-3">
+    <div class="btn-group" role="group">
+        <a class="btn btn-sm {% if filter_state != 'unread' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+           href="{{ url_for('notifications.list_notifications') }}">All</a>
+        <a class="btn btn-sm {% if filter_state == 'unread' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+           href="{{ url_for('notifications.list_notifications', filter='unread') }}">Unread</a>
+    </div>
+</div>
+
+{% if notifications %}
+    <div class="list-group">
+        {% for note in notifications %}
+        <div class="list-group-item d-flex justify-content-between align-items-start {% if note.is_read %}opacity-75{% endif %}">
+            <div>
+                <div class="fw-semibold text-capitalize">{{ note.type }}</div>
+                <div>{{ note.message }}</div>
+                <div class="text-muted small">{{ note.created_at.strftime("%b %d, %Y %H:%M") }}</div>
+            </div>
+            {% if not note.is_read %}
+            <form method="POST" action="{{ url_for('notifications.mark_read', notification_id=note.notification_id) }}">
+                <button class="btn btn-sm btn-outline-secondary">Mark Read</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">No notifications to show.</div>
+{% endif %}
+{% endblock %}

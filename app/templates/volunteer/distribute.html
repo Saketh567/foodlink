@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Record Distribution{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Client Pickup</p>
+        <h1 class="mb-1">{{ client.full_name }} <span class="text-muted">({{ client.client_number }})</span></h1>
+        <p class="mb-2">Document today's pickup with precise weight, items, and notes.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <span class="chip chip-neutral">Household: {{ client.family_size }}</span>
+            <span class="chip {% if client.verification_status == 'verified' %}chip-success{% else %}chip-warning{% endif %}">
+                {{ client.verification_status|title }}
+            </span>
+        </div>
+    </div>
+    <div class="heading-actions text-end">
+        <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('volunteer.volunteer_dashboard') }}">Back to Dashboard</a>
+    </div>
+</section>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Household Snapshot</h5>
+                <ul class="list-unstyled small mb-0">
+                    <li class="mb-1"><strong>Client #:</strong> {{ client.client_number or 'Pending' }}</li>
+                    <li class="mb-1"><strong>Address:</strong> {{ client.address or 'N/A' }}</li>
+                    <li class="mb-1"><strong>Allergies:</strong> {{ client.allergies or 'None noted' }}</li>
+                    <li class="mb-1"><strong>Food Pref:</strong> {{ client.food_preferences or 'None noted' }}</li>
+                    <li class="mb-1"><strong>Total Pickups:</strong> {{ total_pickups }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Approved Proxies</h5>
+                    <span class="badge-soft badge-soft-info">{{ proxies|length if proxies else 0 }} on file</span>
+                </div>
+                {% if proxies %}
+                    <ul class="list-group list-group-flush small">
+                        {% for proxy in proxies[:3] %}
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-semibold">{{ proxy.proxy_name }}</div>
+                                {% if proxy.proxy_phone %}<div>{{ proxy.proxy_phone }}</div>{% endif %}
+                                {% if proxy.proxy_email %}<div class="text-muted">{{ proxy.proxy_email }}</div>{% endif %}
+                            </div>
+                            <span class="badge {% if proxy.status == 'approved' %}bg-success{% elif proxy.status == 'pending' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                {{ proxy.status }}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">No proxy records.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Recent Pickups</h5>
+                {% if recent_pickups %}
+                    <ul class="list-group list-group-flush small">
+                        {% for pickup in recent_pickups %}
+                        <li class="list-group-item">
+                            <div class="fw-semibold">
+                                {% if pickup.distribution_date %}
+                                    {{ pickup.distribution_date.strftime("%b %d, %Y") }}
+                                {% else %}
+                                    &mdash;
+                                {% endif %}
+                            </div>
+                            <div class="text-muted">Weight: {{ pickup.weight_kg }} kg</div>
+                            {% if pickup.items_description %}
+                            <div class="text-muted fst-italic">{{ pickup.items_description }}</div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">No prior distributions recorded.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="mb-1">Record Today's Pickup</h4>
+                        <p class="text-muted small mb-0">Capture weights, parcel notes, and signature confirmation.</p>
+                    </div>
+                    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('volunteer.volunteer_dashboard') }}">Cancel</a>
+                </div>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Weight (kg)</label>
+                        <input type="number" class="form-control" step="0.01" min="0.01" name="weight_kg" required>
+                        <div class="form-text">Enter total combined weight of all parcels.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Items Description</label>
+                        <textarea class="form-control" name="items_description" rows="3" placeholder="List key items, parcels, or notes."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Additional Notes</label>
+                        <textarea class="form-control" name="notes" rows="3" placeholder="Allergies addressed, proxy pickup, etc."></textarea>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="signature" id="signatureCheck">
+                        <label class="form-check-label" for="signatureCheck">
+                            Client or approved proxy confirmed pickup
+                        </label>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a class="btn btn-outline-secondary" href="{{ url_for('volunteer.volunteer_dashboard') }}">Cancel</a>
+                        <button class="btn btn-primary" type="submit">Save Distribution</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

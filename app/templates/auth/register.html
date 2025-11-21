@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Client Registration{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <h1 class="h4 mb-2">Create a FoodLink Client Account</h1>
+  <p class="text-muted small mb-4">Tell us about your household so we can personalize support.</p>
+
+  <form method="post" class="row g-3">
+    <div class="col-12">
+      <label class="form-label" for="full_name">Full Name</label>
+      <input type="text" class="form-control" id="full_name" name="full_name" required>
+    </div>
+
+    <div class="col-12">
+      <label class="form-label" for="email">Email address</label>
+      <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+
+    <div class="col-12">
+      <label class="form-label" for="password">Password</label>
+      <input type="password" class="form-control" id="password" name="password" minlength="8" required>
+      <div class="form-text">At least 8 characters.</div>
+    </div>
+
+    <div class="col-12">
+      <label class="form-label" for="address">Home Address</label>
+      <input type="text" class="form-control" id="address" name="address" list="addressSuggestions"
+             required placeholder="123 Main Street, City, Province">
+      <datalist id="addressSuggestions"></datalist>
+      <input type="hidden" id="address_selection_id" name="address_selection_id">
+      <div id="addressStatus" class="form-text">Start typing, then select your address from the dropdown (Canada Post verified).</div>
+    </div>
+
+    <div class="col-sm-6">
+      <label class="form-label" for="family_size">Family Size</label>
+      <input type="number" class="form-control" id="family_size" name="family_size" min="1" value="1" required>
+    </div>
+
+    <div class="col-sm-6">
+      <label class="form-label" for="allergies">Allergies</label>
+      <input type="text" class="form-control" id="allergies" name="allergies" placeholder="Optional">
+    </div>
+
+    <div class="col-12">
+      <label class="form-label" for="food_preferences">Food Preferences</label>
+      <textarea class="form-control" id="food_preferences" name="food_preferences" rows="2" placeholder="Optional"></textarea>
+    </div>
+
+    <div class="col-12 d-grid gap-2">
+      <button type="submit" class="btn btn-primary w-100">Submit Registration</button>
+      <a class="btn btn-outline-secondary w-100" href="{{ url_for('auth.login') }}">Back to Login</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  const addressInput = document.getElementById('address');
+  const selectionInput = document.getElementById('address_selection_id');
+  const datalist = document.getElementById('addressSuggestions');
+  const statusEl = document.getElementById('addressStatus');
+  const form = document.querySelector('form');
+
+  let isValid = false;
+
+  function setStatus(message, tone) {
+    statusEl.textContent = message;
+    statusEl.className = 'form-text' + (tone ? ' text-' + tone : '');
+  }
+
+  function debounce(fn, delay) {
+    let timer;
+    return function(...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
+  const fetchSuggestions = debounce(async function(term) {
+    if (term.length < 3) {
+      datalist.innerHTML = '';
+      setStatus('Type at least 3 characters to see address suggestions.', 'muted');
+      return;
+    }
+    try {
+      const resp = await fetch(`/address/search?q=${encodeURIComponent(term)}`);
+      const data = await resp.json();
+      datalist.innerHTML = '';
+      (data.suggestions || []).forEach((s) => {
+        const opt = document.createElement('option');
+        opt.value = s.text;
+        opt.dataset.id = s.id || '';
+        opt.label = s.description || '';
+        datalist.appendChild(opt);
+      });
+      setStatus('Select your address from the dropdown suggestions to continue.', 'muted');
+    } catch (err) {
+      console.warn('Address suggestions failed', err);
+      setStatus('Could not fetch suggestions. Check your connection.', 'danger');
+    }
+  }, 250);
+
+  async function validateAddress(showMessages) {
+    const value = addressInput.value.trim();
+    if (!value) {
+      isValid = false;
+      selectionInput.value = '';
+      if (showMessages) setStatus('Address is required.', 'danger');
+      return;
+    }
+
+    const matching = Array.from(datalist.options).find(opt => opt.value === value);
+    const selectionId = matching?.dataset.id || '';
+    selectionInput.value = selectionId;
+    if (!selectionId) {
+      isValid = false;
+      if (showMessages) {
+        setStatus('Please select your address from the dropdown suggestions.', 'danger');
+      }
+      return;
+    }
+
+    setStatus('Validating address...', 'muted');
+    try {
+      const resp = await fetch('/address/validate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ address: value, selection_id: selectionId })
+      });
+      const data = await resp.json();
+      if (!resp.ok || !data.ok) {
+        isValid = false;
+        if (showMessages) {
+          setStatus(data.message || 'Could not validate address. Please choose a suggestion.', 'danger');
+        }
+        return;
+      }
+      isValid = true;
+      setStatus(`Address validated (${data.source || 'verified'})`, 'success');
+    } catch (err) {
+      isValid = false;
+      if (showMessages) setStatus('Address validation failed. Please try again.', 'danger');
+    }
+  }
+
+  addressInput.addEventListener('input', function(e) {
+    isValid = false;
+    selectionInput.value = '';
+    setStatus('Searching Canada Post...', 'muted');
+    fetchSuggestions(e.target.value || '');
+  });
+
+  addressInput.addEventListener('change', function() {
+    validateAddress(false);
+  });
+
+  form.addEventListener('submit', async function(e) {
+    if (isValid) return;
+    e.preventDefault();
+    await validateAddress(true);
+    if (isValid) {
+      form.submit();
+    }
+  });
+})();
+</script>
+{% endblock %}

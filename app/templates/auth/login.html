@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <h1 class="h4 mb-2">
+    {% if requested_role %}
+      {{ requested_role|title }} Login
+    {% else %}
+      Sign in to FoodLink
+    {% endif %}
+  </h1>
+  <p class="text-muted small mb-4">
+    {% if requested_role == 'admin' %}
+      Admins can review clients, proxies, and reports from this secure login.
+    {% elif requested_role == 'volunteer' %}
+      Volunteers can manage shifts and log distributions.
+    {% elif requested_role == 'client' %}
+      Clients can access QR codes, history, and account settings.
+    {% else %}
+      Access your dashboard, manage pickups, and stay informed.
+    {% endif %}
+  </p>
+
+  <form method="post" class="row g-3">
+    <input type="hidden" name="requested_role" value="{{ requested_role }}">
+    <div class="col-12">
+      <label class="form-label" for="email">Email address</label>
+      <input type="email" class="form-control" id="email" name="email" required autofocus>
+    </div>
+
+    <div class="col-12">
+      <label class="form-label" for="password">Password</label>
+      <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+    </div>
+  </form>
+
+  <div class="d-flex justify-content-between mt-3 text-muted small">
+    <a class="link-muted" href="{{ url_for('auth.reset_password') }}">Forgot password?</a>
+    <a class="link-muted" href="{{ url_for('auth.register') }}">Need an account?</a>
+  </div>
+</div>
+{% endblock %}
