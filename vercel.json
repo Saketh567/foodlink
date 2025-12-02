@@ -1,11 +1,5 @@
 {
-  "functions": {
-    "api/server.py": {
-      "runtime": "python3.11",
-      "includeFiles": "app/**"
-    }
-  },
-  "routes": [
-    { "src": "/(.*)", "dest": "/api/server.py" }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/server" }
   ]
 }
