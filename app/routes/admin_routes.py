@@ -18,6 +18,10 @@ def dashboard():
             "SELECT COUNT(*) AS c FROM clients WHERE verification_status='pending'",
             one=True,
         )["c"],
+        "pending_volunteers": query_db(
+            "SELECT COUNT(*) AS c FROM users WHERE role='volunteer' AND is_active=0",
+            one=True,
+        )["c"],
         "verified_clients": query_db(
             "SELECT COUNT(*) AS c FROM clients WHERE verification_status='verified'",
             one=True,
@@ -474,3 +478,50 @@ def no_show_report():
         high_risk=high_risk,
         threshold=NO_SHOW_THRESHOLD,
     )
+
+
+# -------------------------------------------------------------
+# VOLUNTEER VERIFICATION
+# -------------------------------------------------------------
+@admin_bp.route("/verify_volunteers")
+@login_required
+@role_required("admin")
+def verify_volunteers():
+    pending = query_db(
+        "SELECT * FROM users WHERE role='volunteer' AND is_active=0 ORDER BY created_at ASC"
+    )
+    return render_template("admin/verify_volunteers.html", pending=pending)
+
+
+@admin_bp.route("/approve_volunteer/<int:user_id>", methods=["POST"])
+@login_required
+@role_required("admin")
+def approve_volunteer(user_id):
+    user = query_db("SELECT * FROM users WHERE user_id=%s AND role='volunteer'", (user_id,), one=True)
+    if not user:
+        flash("Volunteer not found.", "danger")
+        return redirect(url_for("admin.verify_volunteers"))
+
+    execute_db("UPDATE users SET is_active=1 WHERE user_id=%s", (user_id,))
+    
+    # Notify (if we had email, we'd send one here)
+    create_notification(user_id, "Your volunteer account has been approved! You can now log in.", "success")
+    
+    flash(f"Volunteer {user['full_name']} approved.", "success")
+    return redirect(url_for("admin.verify_volunteers"))
+
+
+@admin_bp.route("/reject_volunteer/<int:user_id>", methods=["POST"])
+@login_required
+@role_required("admin")
+def reject_volunteer(user_id):
+    user = query_db("SELECT * FROM users WHERE user_id=%s AND role='volunteer'", (user_id,), one=True)
+    if not user:
+        flash("Volunteer not found.", "danger")
+        return redirect(url_for("admin.verify_volunteers"))
+
+    # Hard delete for rejected registrations to keep DB clean
+    execute_db("DELETE FROM users WHERE user_id=%s", (user_id,))
+    
+    flash(f"Volunteer request for {user['full_name']} rejected and removed.", "info")
+    return redirect(url_for("admin.verify_volunteers"))

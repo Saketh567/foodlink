@@ -9,12 +9,14 @@
             <div class="col-lg-7 text-white">
                 <p class="eyebrow text-white-50 mb-2">Shift {{ "Active" if active_signin else "Ready" }}</p>
                 <h1 class="display-5 fw-semibold mb-2">Welcome back, {{ volunteer.full_name }}.</h1>
-                <p class="lead text-white-75 mb-4">Scan, verify, and log distributions without losing context. Everything you need for today’s pickups lives here.</p>
+                <p class="lead text-white-75 mb-4">Scan, verify, and log distributions without losing context.
+                    Everything you need for today’s pickups lives here.</p>
                 <div class="d-flex flex-wrap gap-3 mb-4">
                     <a class="btn btn-light btn-lg" href="{{ url_for('volunteer.scan_qr') }}">Scan Client QR</a>
                     {% set resume_id = session.get('last_scanned_client') %}
-                    <a class="btn btn-outline-light btn-lg {% if not resume_id %}disabled{% endif %}"
-                       {% if resume_id %}href="{{ url_for('volunteer.distribute', client_id=resume_id) }}"{% else %}tabindex="-1" aria-disabled="true"{% endif %}>
+                    <a class="btn btn-outline-light btn-lg {% if not resume_id %}disabled{% endif %}" {% if resume_id
+                        %}href="{{ url_for('volunteer.distribute', client_id=resume_id) }}" {% else %}tabindex="-1"
+                        aria-disabled="true" {% endif %}>
                         Resume Draft
                     </a>
                 </div>
@@ -44,19 +46,23 @@
                         </div>
                         <p class="mb-1"><strong>Next shift</strong></p>
                         {% if upcoming_shift %}
-                            <p class="mb-0">{{ upcoming_shift.schedule_date.strftime("%b %d, %Y") }} · {{ upcoming_shift.start_time }} – {{ upcoming_shift.end_time }}</p>
-                            <p class="text-muted small mb-0">{{ upcoming_shift.notes or "No notes provided." }}</p>
+                        <p class="mb-0">{{ upcoming_shift.schedule_date.strftime("%b %d, %Y") }} · {{
+                            upcoming_shift.start_time }} – {{ upcoming_shift.end_time }}</p>
+                        <p class="text-muted small mb-0">{{ upcoming_shift.notes or "No notes provided." }}</p>
                         {% else %}
-                            <p class="text-muted mb-0">No upcoming shifts scheduled. Visit <a class="link-light text-decoration-underline" href="{{ url_for('volunteer.shifts') }}">Shift Log</a>.</p>
+                        <p class="text-muted mb-0">No upcoming shifts scheduled. Visit <a
+                                class="link-light text-decoration-underline"
+                                href="{{ url_for('volunteer.shifts') }}">Shift Log</a>.</p>
                         {% endif %}
                     </div>
                     <div class="card-footer bg-transparent d-flex flex-wrap gap-2">
                         {% if active_signin %}
-                            <form method="POST" action="{{ url_for('volunteer.signout', signin_id=active_signin.signin_id) }}">
-                                <button class="btn btn-outline-danger btn-sm">End Shift</button>
-                            </form>
+                        <form method="POST"
+                            action="{{ url_for('volunteer.signout', signin_id=active_signin.signin_id) }}">
+                            <button class="btn btn-outline-danger btn-sm">End Shift</button>
+                        </form>
                         {% else %}
-                            <a class="btn btn-primary btn-sm" href="{{ url_for('volunteer.signin') }}">Begin Shift</a>
+                        <a class="btn btn-primary btn-sm" href="{{ url_for('volunteer.signin') }}">Begin Shift</a>
                         {% endif %}
                         <a class="btn btn-outline-primary btn-sm" href="{{ url_for('volunteer.history') }}">History</a>
                     </div>
@@ -74,21 +80,23 @@
                         <a class="btn btn-link btn-sm" href="{{ url_for('volunteer.all_distributions') }}">View all</a>
                     </div>
                     {% if recent %}
-                        <ul class="timeline">
-                            {% for r in recent %}
-                            <li>
-                                <div class="small text-muted">
-                                    <time datetime="{{ r.distribution_date.isoformat() }}">{{ r.distribution_date.strftime("%b %d, %Y %H:%M") }}</time>
-                                </div>
-                                <p class="fw-semibold mb-0">{{ r.client_number }} ({{ r.client_name }}) · <span class="text-primary">{{ r.weight_kg }} kg</span></p>
-                                {% if r.items_description %}
-                                <p class="text-muted small mb-0">{{ r.items_description }}</p>
-                                {% endif %}
-                            </li>
-                            {% endfor %}
-                        </ul>
+                    <ul class="timeline">
+                        {% for r in recent %}
+                        <li>
+                            <div class="small text-muted">
+                                <time datetime="{{ r.distribution_date.isoformat() }}">{{
+                                    r.distribution_date.strftime("%b %d, %Y %H:%M") }}</time>
+                            </div>
+                            <p class="fw-semibold mb-0">{{ r.client_number }} ({{ r.client_name }}) · <span
+                                    class="text-primary">{{ r.weight_kg }} kg</span></p>
+                            {% if r.items_description %}
+                            <p class="text-muted small mb-0">{{ r.items_description }}</p>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
                     {% else %}
-                        <p class="text-muted mb-0">No distributions recorded yet. Scan a client QR to get started.</p>
+                    <p class="text-muted mb-0">No distributions recorded yet. Scan a client QR to get started.</p>
                     {% endif %}
                 </div>
             </div>
@@ -111,7 +119,8 @@
                         {% endfor %}
                     </ul>
                     <div class="d-grid gap-2">
-                        <a class="btn btn-outline-primary" href="{{ url_for('volunteer.manage_no_shows') }}">Log no-show</a>
+                        <a class="btn btn-outline-primary" href="{{ url_for('volunteer.manage_no_shows') }}">Log
+                            no-show</a>
                         <a class="btn btn-outline-primary" href="{{ url_for('volunteer.shifts') }}">Shift log</a>
                     </div>
                 </div>

@@ -664,11 +664,46 @@ body.app-body {
     }
 
     .card > .card-body {
-        padding: 1.5rem;
+        padding: 1.25rem;
     }
 
     .auth-card {
-        padding: 1.75rem;
+        padding: 1.5rem;
         border-radius: 1rem;
+    }
+
+    .page-shell {
+        padding: 1rem;
+    }
+
+    .page-heading h1 {
+        font-size: 1.75rem;
+    }
+
+    .stat-pill .value {
+        font-size: 1.5rem;
+    }
+
+    .hero {
+        padding: 1.5rem;
+    }
+
+    .gradient-hero {
+        padding: 1.5rem;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .d-flex.gap-3.mb-4 {
+        flex-direction: column;
+        gap: 0.5rem !important;
     }
 }

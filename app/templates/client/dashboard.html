@@ -3,9 +3,9 @@
 
 {% block content %}
 {% set status_badges = {
-    "verified": "bg-success",
-    "pending": "bg-warning text-dark",
-    "rejected": "bg-danger"
+"verified": "bg-success",
+"pending": "bg-warning text-dark",
+"rejected": "bg-danger"
 } %}
 
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
@@ -39,17 +39,17 @@
             <div class="card-body">
                 <h5 class="card-title">Check-In QR Code</h5>
                 {% if client.verification_status == 'verified' %}
-                    {% if qr_filename %}
-                        <img src="{{ url_for('static', filename='qrcodes/' ~ qr_filename) }}"
-                             alt="Client QR Code" class="img-fluid mb-2" style="max-width: 200px;">
-                        <p class="text-muted small mb-0">Show this code to volunteers when you arrive.</p>
-                    {% else %}
-                        <p class="text-muted mb-0">Generating your QR code. Refresh in a moment.</p>
-                    {% endif %}
-                {% elif client.verification_status == 'pending' %}
-                    <p class="text-muted mb-0">Once approved, your QR code will appear here.</p>
+                {% if qr_filename %}
+                <img src="{{ url_for('static', filename='qrcodes/' ~ qr_filename) }}" alt="Client QR Code"
+                    class="img-fluid mb-2" style="max-width: 200px;">
+                <p class="text-muted small mb-0">Show this code to volunteers when you arrive.</p>
                 {% else %}
-                    <p class="text-muted mb-0">Contact support to resolve your verification status.</p>
+                <p class="text-muted mb-0">Generating your QR code. Refresh in a moment.</p>
+                {% endif %}
+                {% elif client.verification_status == 'pending' %}
+                <p class="text-muted mb-0">Once approved, your QR code will appear here.</p>
+                {% else %}
+                <p class="text-muted mb-0">Contact support to resolve your verification status.</p>
                 {% endif %}
             </div>
         </div>
@@ -61,9 +61,12 @@
                 <h5 class="card-title">Quick Actions</h5>
                 <div class="d-grid gap-2 mt-2">
                     <a class="btn btn-primary" href="{{ url_for('client.update_profile') }}">Update Profile</a>
-                    <a class="btn btn-outline-primary" href="{{ url_for('client.pickup_history') }}">View Pickup History</a>
-                    <a class="btn btn-outline-secondary" href="{{ url_for('client.manage_proxies') }}">Manage Proxy Pickups</a>
-                    <a class="btn btn-outline-secondary" href="{{ url_for('auth.change_password') }}">Change Password</a>
+                    <a class="btn btn-outline-primary" href="{{ url_for('client.pickup_history') }}">View Pickup
+                        History</a>
+                    <a class="btn btn-outline-secondary" href="{{ url_for('client.manage_proxies') }}">Manage Proxy
+                        Pickups</a>
+                    <a class="btn btn-outline-secondary" href="{{ url_for('auth.change_password') }}">Change
+                        Password</a>
                 </div>
             </div>
         </div>
@@ -81,34 +84,34 @@
                 </div>
 
                 {% if history_preview %}
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Volunteer</th>
-                                    <th>Weight</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in history_preview %}
-                                <tr>
-                                    <td>
-                                        {% if row.distribution_date %}
-                                            {{ row.distribution_date.strftime("%b %d, %Y") }}
-                                        {% else %}
-                                            &mdash;
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ row.volunteer_name or "N/A" }}</td>
-                                    <td>{{ row.weight_kg }} kg</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Volunteer</th>
+                                <th>Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in history_preview %}
+                            <tr>
+                                <td>
+                                    {% if row.distribution_date %}
+                                    {{ row.distribution_date.strftime("%b %d, %Y") }}
+                                    {% else %}
+                                    &mdash;
+                                    {% endif %}
+                                </td>
+                                <td>{{ row.volunteer_name or "N/A" }}</td>
+                                <td>{{ row.weight_kg }} kg</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
                 {% else %}
-                    <p class="text-muted mb-0">No pickups recorded yet.</p>
+                <p class="text-muted mb-0">No pickups recorded yet.</p>
                 {% endif %}
             </div>
         </div>
@@ -138,28 +141,28 @@
                 </div>
 
                 {% if proxy_preview %}
-                    <ul class="list-group list-group-flush">
-                        {% for proxy in proxy_preview %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="fw-semibold">{{ proxy.proxy_name }}</div>
-                                {% if proxy.created_at %}
-                                <div class="text-muted small">
-                                    Requested {{ proxy.created_at.strftime("%b %d, %Y") }}
-                                </div>
-                                {% endif %}
+                <ul class="list-group list-group-flush">
+                    {% for proxy in proxy_preview %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold">{{ proxy.proxy_name }}</div>
+                            {% if proxy.created_at %}
+                            <div class="text-muted small">
+                                Requested {{ proxy.created_at.strftime("%b %d, %Y") }}
                             </div>
-                            <span class="badge text-capitalize
+                            {% endif %}
+                        </div>
+                        <span class="badge text-capitalize
                                 {% if proxy.status == 'approved' %}bg-success
                                 {% elif proxy.status == 'pending' %}bg-warning text-dark
                                 {% else %}bg-secondary{% endif %}">
-                                {{ proxy.status }}
-                            </span>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                            {{ proxy.status }}
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
                 {% else %}
-                    <p class="text-muted mb-0">No proxy requests yet. Add one if someone else picks up for you.</p>
+                <p class="text-muted mb-0">No proxy requests yet. Add one if someone else picks up for you.</p>
                 {% endif %}
             </div>
         </div>

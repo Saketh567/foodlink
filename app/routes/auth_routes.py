@@ -170,6 +170,50 @@ def register():
 
 
 # -------------------------------------------------------------
+# VOLUNTEER REGISTRATION
+# -------------------------------------------------------------
+@auth_bp.route("/register/volunteer", methods=["GET", "POST"])
+def register_volunteer():
+    if request.method == "POST":
+        full_name = request.form["full_name"].strip()
+        email = request.form["email"].strip()
+        password = request.form["password"]
+        phone = request.form.get("phone", "").strip()
+
+        # Check if email exists
+        existing = query_db("SELECT user_id FROM users WHERE email=%s", (email,), one=True)
+        if existing:
+            flash("Email already registered.", "warning")
+            return redirect(url_for("auth.login"))
+
+        hashed = hash_password(password)
+
+        # Create user account (is_active=0 for admin approval)
+        execute_db("""
+            INSERT INTO users (email, password_hash, full_name, phone, role, is_active)
+            VALUES (%s, %s, %s, %s, 'volunteer', 0)
+        """, (email, hashed, full_name, phone))
+
+        # Notify admins (optional, but good practice)
+        admin_user = query_db(
+            "SELECT user_id FROM users WHERE role='admin' ORDER BY user_id ASC LIMIT 1",
+            one=True,
+        )
+        if admin_user:
+            create_notification(
+                admin_user["user_id"],
+                f"New volunteer registration: {full_name} ({email}). Pending approval.",
+                "info",
+            )
+
+        flash("Registration submitted. Please wait for admin approval.", "success")
+        return redirect(url_for("auth.login"))
+
+    return render_template("auth/register_volunteer.html")
+
+
+
+# -------------------------------------------------------------
 # PASSWORD RESET (CLIENT SELF-SERVE)
 # -------------------------------------------------------------
 @auth_bp.route("/reset_password", methods=["GET", "POST"])

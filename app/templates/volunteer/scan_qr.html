@@ -8,11 +8,13 @@
         <div class="card shadow-sm h-100">
             <div class="card-body">
                 <h2 class="card-title mb-3">Camera scanner</h2>
-                <p class="text-muted">Use your device camera to scan the QR and preview household details before logging the pickup.</p>
+                <p class="text-muted">Use your device camera to scan the QR and preview household details before logging
+                    the pickup.</p>
                 <button class="btn btn-outline-primary mb-3" id="startCameraBtn" type="button">Start camera</button>
                 <div id="cameraSection" class="d-none">
                     <div id="qr-reader" class="qr-reader"></div>
-                    <p class="text-muted small mt-2">Hold the QR steady until it registers. The preview panel will populate automatically.</p>
+                    <p class="text-muted small mt-2">Hold the QR steady until it registers. The preview panel will
+                        populate automatically.</p>
                 </div>
                 <hr>
                 <p class="text-muted small mb-2">Need a fallback? Upload the QR image instead.</p>
@@ -50,7 +52,8 @@
                 </div>
             </div>
             <div class="card-footer bg-transparent text-end">
-                <a class="btn btn-primary disabled" id="previewAction" tabindex="-1" aria-disabled="true">Open distribution form</a>
+                <a class="btn btn-primary disabled" id="previewAction" tabindex="-1" aria-disabled="true">Open
+                    distribution form</a>
             </div>
         </div>
     </div>
@@ -60,114 +63,125 @@
 {% block extra_js %}
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
-const startBtn = document.getElementById('startCameraBtn');
-const cameraSection = document.getElementById('cameraSection');
-const previewPlaceholder = document.getElementById('previewPlaceholder');
-const previewDetails = document.getElementById('previewDetails');
-const previewStatus = document.getElementById('previewStatus');
-const previewName = document.getElementById('previewName');
-const previewMeta = document.getElementById('previewMeta');
-const proxyList = document.getElementById('previewProxies');
-const recentList = document.getElementById('previewRecent');
-const previewAction = document.getElementById('previewAction');
-let html5QrCode;
+    const startBtn = document.getElementById('startCameraBtn');
+    const cameraSection = document.getElementById('cameraSection');
+    const previewPlaceholder = document.getElementById('previewPlaceholder');
+    const previewDetails = document.getElementById('previewDetails');
+    const previewStatus = document.getElementById('previewStatus');
+    const previewName = document.getElementById('previewName');
+    const previewMeta = document.getElementById('previewMeta');
+    const proxyList = document.getElementById('previewProxies');
+    const recentList = document.getElementById('previewRecent');
+    const previewAction = document.getElementById('previewAction');
+    let html5QrCode;
 
-function stopScanner() {
-    if (html5QrCode) {
-        html5QrCode.stop().catch(() => {});
-    }
-}
-
-function renderPreview(data) {
-    if (!data || !data.client) {
-        previewPlaceholder.classList.remove('d-none');
-        previewDetails.classList.add('d-none');
-        previewAction.classList.add('disabled');
-        previewAction.removeAttribute('href');
-        previewAction.setAttribute('tabindex', '-1');
-        previewAction.setAttribute('aria-disabled', 'true');
-        previewStatus.classList.add('d-none');
-        return;
-    }
-    previewPlaceholder.classList.add('d-none');
-    previewDetails.classList.remove('d-none');
-    previewStatus.classList.remove('d-none');
-    previewStatus.textContent = data.client.verification_status;
-    previewName.textContent = `${data.client.full_name} (${data.client.client_number || 'Unassigned'})`;
-    previewMeta.textContent = `Household of ${data.client.family_size} • Status: ${data.client.verification_status}`;
-
-    proxyList.innerHTML = '';
-    if (data.proxies && data.proxies.length) {
-        data.proxies.forEach(proxy => {
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${proxy.name}</strong> <span class="text-muted">(${proxy.status})</span><br>${proxy.phone || ''} ${proxy.email ? ' · ' + proxy.email : ''}`;
-            proxyList.appendChild(li);
-        });
-    } else {
-        proxyList.innerHTML = '<li class="text-muted">No proxies on file.</li>';
-    }
-
-    recentList.innerHTML = '';
-    if (data.recent && data.recent.length) {
-        data.recent.forEach(item => {
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${item.date || '—'}</strong> · ${item.weight || '0'} kg<br><span class="text-muted">${item.items || 'No notes'}</span>`;
-            recentList.appendChild(li);
-        });
-    } else {
-        recentList.innerHTML = '<li class="text-muted">No recent pickups logged.</li>';
-    }
-
-    previewAction.classList.remove('disabled');
-    previewAction.href = data.distribute_url;
-    previewAction.removeAttribute('tabindex');
-    previewAction.removeAttribute('aria-disabled');
-}
-
-async function fetchPreview(decodedText) {
-    previewStatus.classList.remove('d-none');
-    previewStatus.textContent = 'Scanning…';
-    try {
-        const response = await fetch("{{ url_for('volunteer.scan_qr_preview') }}", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ qr_payload: decodedText })
-        });
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Unable to read QR code.');
+    function stopScanner() {
+        if (html5QrCode) {
+            html5QrCode.stop().catch(() => { });
         }
-        const data = await response.json();
-        renderPreview(data);
-        previewStatus.textContent = 'Ready';
-    } catch (err) {
-        previewStatus.textContent = 'Error';
-        alert(err.message);
-        renderPreview(null);
     }
-}
 
-function onScanSuccess(decodedText) {
-    stopScanner();
-    fetchPreview(decodedText);
-}
+    function renderPreview(data) {
+        if (!data || !data.client) {
+            previewPlaceholder.classList.remove('d-none');
+            previewDetails.classList.add('d-none');
+            previewAction.classList.add('disabled');
+            previewAction.removeAttribute('href');
+            previewAction.setAttribute('tabindex', '-1');
+            previewAction.setAttribute('aria-disabled', 'true');
+            previewStatus.classList.add('d-none');
+            return;
+        }
+        previewPlaceholder.classList.add('d-none');
+        previewDetails.classList.remove('d-none');
+        previewStatus.classList.remove('d-none');
+        previewStatus.textContent = data.client.verification_status;
+        previewName.textContent = `${data.client.full_name} (${data.client.client_number || 'Unassigned'})`;
+        previewMeta.textContent = `Household of ${data.client.family_size} • Status: ${data.client.verification_status}`;
 
-startBtn?.addEventListener('click', function () {
-    startBtn.disabled = true;
-    cameraSection.classList.remove('d-none');
-    html5QrCode = new Html5Qrcode("qr-reader");
-    html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        onScanSuccess,
-        () => {}
-    ).catch(err => {
-        console.error(err);
-        alert("Unable to access camera. Please allow camera permissions or use the upload option.");
-        startBtn.disabled = false;
-    });
-});
+        proxyList.innerHTML = '';
+        if (data.proxies && data.proxies.length) {
+            data.proxies.forEach(proxy => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${proxy.name}</strong> <span class="text-muted">(${proxy.status})</span><br>${proxy.phone || ''} ${proxy.email ? ' · ' + proxy.email : ''}`;
+                proxyList.appendChild(li);
+            });
+        } else {
+            proxyList.innerHTML = '<li class="text-muted">No proxies on file.</li>';
+        }
 
-window.addEventListener('beforeunload', stopScanner);
+        recentList.innerHTML = '';
+        if (data.recent && data.recent.length) {
+            data.recent.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${item.date || '—'}</strong> · ${item.weight || '0'} kg<br><span class="text-muted">${item.items || 'No notes'}</span>`;
+                recentList.appendChild(li);
+            });
+        } else {
+            recentList.innerHTML = '<li class="text-muted">No recent pickups logged.</li>';
+        }
+
+        previewAction.classList.remove('disabled');
+        previewAction.href = data.distribute_url;
+        previewAction.removeAttribute('tabindex');
+        previewAction.removeAttribute('aria-disabled');
+    }
+
+    async function fetchPreview(decodedText) {
+        previewStatus.classList.remove('d-none');
+        previewStatus.textContent = 'Scanning…';
+        try {
+            const response = await fetch("{{ url_for('volunteer.scan_qr_preview') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ qr_payload: decodedText })
+            });
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Unable to read QR code.');
+            }
+            const data = await response.json();
+            renderPreview(data);
+            previewStatus.textContent = 'Ready';
+        } catch (err) {
+            previewStatus.textContent = 'Error';
+            alert(err.message);
+            renderPreview(null);
+        }
+    }
+
+    function onScanSuccess(decodedText) {
+        stopScanner();
+        fetchPreview(decodedText);
+    }
+
+    if (startBtn) {
+        startBtn.addEventListener('click', function () {
+            startBtn.disabled = true;
+            cameraSection.classList.remove('d-none');
+            html5QrCode = new Html5Qrcode("qr-reader");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: (viewfinderWidth, viewfinderHeight) => {
+                        const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                        return {
+                            width: Math.floor(minEdge * 0.7),
+                            height: Math.floor(minEdge * 0.7)
+                        };
+                    }
+                },
+                onScanSuccess,
+                () => { }
+            ).catch(err => {
+                console.error(err);
+                alert("Unable to access camera. Please allow camera permissions or use the upload option.");
+                startBtn.disabled = false;
+            });
+        });
+    }
+
+    window.addEventListener('beforeunload', stopScanner);
 </script>
 {% endblock %}
