@@ -69,13 +69,12 @@ FoodLink Connect is a Flask-based web application designed to streamline the pro
 
 5. **Configure environment variables**
    ```bash
-   # Copy the example file
+   # Option A: copy the example file and edit values
    copy .env.example .env   # Windows
-   cp .env.example .env      # macOS/Linux
-   
-   # Edit .env with your MySQL credentials
-   # Generate a secret key:
-   python -c "import secrets; print(secrets.token_hex(32))"
+   cp .env.example .env     # macOS/Linux
+
+   # Option B: generate one interactively
+   python create_env_file.py
    ```
 
 6. **Run the application**

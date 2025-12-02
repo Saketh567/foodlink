@@ -1,36 +1,52 @@
 """
 Database Connection Manager
-SQLite version for Vercel & local development
+MySQL implementation for local and hosted environments
 """
-import sqlite3
-from flask import g
-import os
+import pymysql
+from flask import current_app, g
 
-# Path for SQLite DB
-# On Vercel, only /tmp is writeable
-DB_PATH = os.path.join("/tmp", "database.db")
 
 def init_db(app):
     """
-    Initialize SQLite database.
-    Creates file automatically if missing.
-    Runs schema if provided.
+    Validate MySQL connectivity at startup.
     """
-    # Ensure DB file exists
-    if not os.path.exists(DB_PATH):
-        print("Creating new SQLite DB at:", DB_PATH)
-        open(DB_PATH, 'a').close()
-    else:
-        print("Using existing SQLite DB at:", DB_PATH)
+    try:
+        conn = pymysql.connect(
+            host=app.config["MYSQL_HOST"],
+            port=app.config["MYSQL_PORT"],
+            user=app.config["MYSQL_USER"],
+            password=app.config["MYSQL_PASSWORD"],
+            database=app.config["MYSQL_DATABASE"],
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+        conn.close()
+        print(
+            f"Connected to MySQL at {app.config['MYSQL_HOST']}:{app.config['MYSQL_PORT']} "
+            f"(DB: {app.config['MYSQL_DATABASE']})"
+        )
+    except Exception as exc:
+        print("Failed to connect to MySQL:", exc)
+        raise
+
 
 def get_db():
     """
-    Returns a SQLite connection for the current request.
+    Returns a MySQL connection for the current request context.
     """
     if "db" not in g:
-        g.db = sqlite3.connect(DB_PATH)
-        g.db.row_factory = sqlite3.Row  # returns dict-like rows
+        g.db = pymysql.connect(
+            host=current_app.config["MYSQL_HOST"],
+            port=current_app.config["MYSQL_PORT"],
+            user=current_app.config["MYSQL_USER"],
+            password=current_app.config["MYSQL_PASSWORD"],
+            database=current_app.config["MYSQL_DATABASE"],
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
+            autocommit=False,
+        )
     return g.db
+
 
 def close_db(e=None):
     """
@@ -40,9 +56,10 @@ def close_db(e=None):
     if db is not None:
         db.close()
 
+
 def query_db(query, args=(), one=False, commit=False):
     """
-    Executes SQL query with parameters.
+    Executes SQL query with parameters against MySQL.
     """
     db = get_db()
     cursor = db.cursor()
@@ -55,13 +72,11 @@ def query_db(query, args=(), one=False, commit=False):
             return cursor.lastrowid
 
         rows = cursor.fetchall()
-        rows = [dict(row) for row in rows]
-
         return (rows[0] if rows else None) if one else rows
 
-    except Exception as e:
+    except Exception as exc:
         db.rollback()
-        print("SQLite error:", e)
+        print("MySQL error:", exc)
         raise
 
     finally:

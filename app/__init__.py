@@ -4,6 +4,7 @@ Initializes the Flask app with all configurations, blueprints, and extensions
 """
 from flask import Flask
 from dotenv import load_dotenv
+from flask_cors import CORS            # <-- ADD THIS
 from app.config import Config
 
 # Load environment variables
@@ -14,15 +15,17 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # ----------------------------------
+    # Enable CORS for frontend access
+    # (Vercel frontend -> Cloudflared -> Flask)
+    # ----------------------------------
+    CORS(app)       # <-- ADD THIS LINE
+
     # -----------------------------
-    # Database (SQLite)
+    # Database (MySQL)
     # -----------------------------
     from app.database import init_db, close_db
     init_db(app)
-
-    from app.init_schema import initialize_schema
-    initialize_schema()
-
     app.teardown_appcontext(close_db)
 
     # -----------------------------
