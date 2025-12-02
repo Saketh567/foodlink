@@ -1,79 +1,68 @@
 """
 Database Connection Manager
-Handles MySQL connections using connection pooling for better performance
+SQLite version for Vercel & local development
 """
-import mysql.connector
-from mysql.connector import pooling
-from flask import g, current_app
+import sqlite3
+from flask import g
+import os
 
-# Global connection pool
-connection_pool = None
+# Path for SQLite DB
+# On Vercel, only /tmp is writeable
+DB_PATH = os.path.join("/tmp", "database.db")
 
 def init_db(app):
-    """Initialize database connection pool"""
-    global connection_pool
-    
-    try:
-        connection_pool = pooling.MySQLConnectionPool(
-            pool_name="foodlink_pool",
-            pool_size=5,
-            pool_reset_session=True,
-            host=app.config['MYSQL_HOST'],
-            port=app.config['MYSQL_PORT'],
-            database=app.config['MYSQL_DATABASE'],
-            user=app.config['MYSQL_USER'],
-            password=app.config['MYSQL_PASSWORD'],
-            autocommit=False
-        )
-        print("✓ Database connection pool initialized successfully")
-    except mysql.connector.Error as err:
-        print(f"✗ Error initializing database: {err}")
-        raise
+    """
+    Initialize SQLite database.
+    Creates file automatically if missing.
+    Runs schema if provided.
+    """
+    # Ensure DB file exists
+    if not os.path.exists(DB_PATH):
+        print("Creating new SQLite DB at:", DB_PATH)
+        open(DB_PATH, 'a').close()
+    else:
+        print("Using existing SQLite DB at:", DB_PATH)
 
 def get_db():
-    """Get database connection from pool"""
-    if 'db' not in g:
-        g.db = connection_pool.get_connection()
+    """
+    Returns a SQLite connection for the current request.
+    """
+    if "db" not in g:
+        g.db = sqlite3.connect(DB_PATH)
+        g.db.row_factory = sqlite3.Row  # returns dict-like rows
     return g.db
 
 def close_db(e=None):
-    """Close database connection"""
-    db = g.pop('db', None)
+    """
+    Closes DB connection after request.
+    """
+    db = g.pop("db", None)
     if db is not None:
         db.close()
 
 def query_db(query, args=(), one=False, commit=False):
     """
-    Execute a database query
-    
-    Args:
-        query: SQL query string
-        args: Query parameters (tuple)
-        one: Return single row or all rows
-        commit: Whether to commit transaction
-    
-    Returns:
-        Query results or None
+    Executes SQL query with parameters.
     """
     db = get_db()
-    cursor = db.cursor(dictionary=True)
-    
+    cursor = db.cursor()
+
     try:
         cursor.execute(query, args)
-        
+
         if commit:
             db.commit()
             return cursor.lastrowid
-        
-        rv = cursor.fetchall()
-        cursor.close()
-        return (rv[0] if rv else None) if one else rv
-    
-    except mysql.connector.Error as err:
+
+        rows = cursor.fetchall()
+        rows = [dict(row) for row in rows]
+
+        return (rows[0] if rows else None) if one else rows
+
+    except Exception as e:
         db.rollback()
-        print(f"Database error: {err}")
+        print("SQLite error:", e)
         raise
+
     finally:
         cursor.close()
-
-

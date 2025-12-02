@@ -19,6 +19,10 @@ def create_app(config_class=Config):
     # -----------------------------
     from app.database import init_db, close_db
     init_db(app)
+
+    from app.init_schema import initialize_schema
+    initialize_schema()
+
     app.teardown_appcontext(close_db)
 
     # -----------------------------
